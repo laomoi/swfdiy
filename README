@@ -1,0 +1,5 @@
+swf library for dumping abc and hacking tags
+
+stable/ :  is the release directory
+libs/:     as3 library
+tools/:    tools for demo or other usages
