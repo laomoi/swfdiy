@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" width="687" height="662">
+
+	<fx:Script>
+		<![CDATA[
+			import com.swfdiy.data.SWF;
+			import com.swfdiy.data.SWFTag;
+			import com.swfdiy.data.SWFTag.TagDoABC;
+			import com.swfdiy.data.SWFTag.TagSymbolClass;
+			
+			import flash.display.Loader;
+			import flash.net.FileReference;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.ItemClickEvent;
+			
+		
+			
+			private var file:FileReference;
+			private var file2:FileReference;
+			[Bindable]
+			private var symbolList:ArrayCollection;
+			
+			private var loader:Loader;
+			
+			private var swf:SWF;
+			private var tags_bytes:Array;
+			private var targetABCTag:ByteArray;
+			private var replaceABCTagN:int = 1;
+			
+			protected function onClickTest(event:MouseEvent):void
+			{
+				file = new FileReference();
+				file.addEventListener(Event.SELECT, selectHandler);
+				
+				var allFilter:FileFilter = new FileFilter("swf (*.swf)", "*.swf");
+				
+				file.browse(new Array(allFilter));
+			}
+			
+			private function selectHandler(event:Event):void {
+				file.addEventListener(Event.COMPLETE, onLoadComplete);				
+				file.load(); 
+			}
+			
+			private function onLoadComplete(event:Event):void {			
+				//loader = new Loader();
+				//loader.loadBytes(file.data);
+				
+				
+				swf = new SWF(file.data);
+				
+				
+				swf.startReadTags();				
+				//symbolList = new ArrayCollection();
+				var abcTagCount:int = 0;
+				tags_bytes = [];
+				
+				var dump_str:String = "";
+				while(1) {
+					var start_pos:int = swf.pos;
+					var tag:SWFTag = swf.read_tag() ;
+					var end_pos:int = swf.pos;
+					
+					if (tag == null) {
+						break;
+					}
+					
+					trace(tag.id + "," + tag.length );
+					var tag_byte:ByteArray = swf.get_bytes(start_pos, end_pos);
+					if (tag is TagSymbolClass) {
+						var tagSymbolClass:TagSymbolClass =tag as TagSymbolClass;
+						
+						//Debug.array(tagSpecific.Symbols);
+						for (var i:int=0;i<tagSymbolClass.Symbols.length;i++) {
+							//symbolList.addItem(
+							//tagSpecific.Symbols[i]
+							
+							trace(tagSymbolClass.Symbols[i]);
+							//);
+						}
+						
+					} else if (tag is TagDoABC) {
+						var tagDoABC:TagDoABC =  tag as TagDoABC;
+						trace("tagname:" + tagDoABC.Name);
+						
+						
+						var s:String = tagDoABC.dump();
+						//trace(s);
+						dump_str += s;
+						
+						
+						
+						save_file(tag_byte,abcTagCount + ".tag" );
+						
+						/*
+						var f:FileStream = new FileStream();
+						var file:File = File.desktopDirectory.resolvePath(abcTagCount + ".abc");
+						f.open(file,  FileMode.WRITE);
+						f.writeBytes(tag.rawdata, 0);
+						f.close();
+						abcTagCount++;
+						*/
+						
+						if (replaceABCTagN == abcTagCount) {
+							targetABCTag = tag_byte;
+						}
+						save_file(tagDoABC.get_abc_bytes(),abcTagCount + ".abc" );
+						
+						abcTagCount++;
+						
+						
+					}
+					
+					tags_bytes.push(tag_byte);
+					
+					var sb:ByteArray = new ByteArray;
+					sb.writeUTFBytes(dump_str);
+					save_file(sb, "dump.txt");
+				}
+				
+				//symbolList.source.sort(Array.CASEINSENSITIVE);
+				
+				//currentState = "Opened";			
+				
+			}
+			
+			private function save_file(data:ByteArray, fileName:String):void {
+				var f:FileStream = new FileStream();
+				var file:File = File.desktopDirectory.resolvePath(fileName);
+				f.open(file,  FileMode.WRITE);
+				f.writeBytes(data, 0);
+				f.close();
+			}
+			
+			protected function onClickInsert(event:MouseEvent):void
+			{
+				file2 = new FileReference();
+				file2.addEventListener(Event.SELECT, selectHandler2);
+				
+				var allFilter:FileFilter = new FileFilter("tag (*.tag)", "*.tag");
+				
+				file2.browse(new Array(allFilter));
+			}
+			
+			private function selectHandler2(event:Event):void {
+				file2.addEventListener(Event.COMPLETE, onLoadComplete2);				
+				file2.load(); 
+			}
+			
+			private function onLoadComplete2(event:Event):void {	
+				
+				//replace
+				var new_tags_bytes:Array = [];
+				for (var i:int =0 ;i<tags_bytes.length;i++) {
+					if (tags_bytes[i]!=targetABCTag) {
+						new_tags_bytes.push(tags_bytes[i]);
+					} else {
+						new_tags_bytes.push(file2.data);
+					}
+						
+				}
+				
+				var new_swf_bytes:ByteArray = swf.make_swf_bytes_from_tags(new_tags_bytes);
+				var f:FileStream = new FileStream();
+				var file:File = File.desktopDirectory.resolvePath("new.swf");
+				f.open(file,  FileMode.WRITE);
+				f.writeBytes(new_swf_bytes, 0);
+				f.close();
+			}
+
+			protected function onUncompress(event:MouseEvent):void
+			{
+				var f:FileStream = new FileStream();
+				var file:File = File.desktopDirectory.resolvePath("uncompress.swf");
+				f.open(file,  FileMode.WRITE);
+				f.writeBytes(swf.get_uncompress_bytes(), 0);
+				f.close();
+			}
+
+		]]>	
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button x="10" y="19" label="loadRead" click="onClickTest(event)"/>
+	<s:TextArea x="203" y="12" width="429" height="642" id="txt"/>
+	<s:Button x="10" y="48" label="INSERT TAG" click="onClickInsert(event)"/>
+	<s:Button x="29" y="99" label="Uncompress" click="onUncompress(event)"/>
+</s:WindowedApplication>
