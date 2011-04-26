@@ -182,11 +182,13 @@ package com.swfdiy.data.ABC
 						
 						params.push(new OpcodeParam("s24", p1));
 						params.push(new OpcodeParam("u32", maxindex));
-						s += "default:" + labels.labelFor(target); // target + "("+(target-pos)+")"
+						var l:String = labels.labelFor(target);
+						s += "default:" + l; // target + "("+(target-pos)+")"
+						
 						s += " maxcase:" + maxindex;
 						for (var i:int=0; i <= maxindex; i++) {
 							var p2:int = stream.read_s24();
-							target = pos + stream.read_s24();
+							target = pos + p2;
 							s += " " + labels.labelFor(target) // target + "("+(target-pos)+")"
 							params.push(new OpcodeParam("s24", p2));
 						}

@@ -90,8 +90,10 @@
 						
 						
 						var s:String = tagDoABC.dump();
-						//trace(s);
 						dump_str += s;
+						
+						//trace(s);
+						
 						
 						
 						
