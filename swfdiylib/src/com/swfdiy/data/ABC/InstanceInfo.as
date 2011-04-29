@@ -47,7 +47,29 @@ package com.swfdiy.data.ABC
 			return Global.MULTINAME(name);
 		}
 		
+		public function dumpRawData(_newStream:ABCStream):void {
+			_newStream.write_u32(name);
+			_newStream.write_u32(super_name);
+			_newStream.write_u8(flags);
+			
+			var i:int;
 		
+			if (flags & Constant.CONSTANT_ClassProtectedNs) {
+				_newStream.write_u32(protectedNs);
+			}
+			_newStream.write_u32(intrf_count);
+			for (i=0;i<intrf_count;i++) {
+				_newStream.write_u32(interfaces[i]);
+			}
+			
+			_newStream.write_u32(iint);
+			_newStream.write_u32(trait_count);
+
+			for (i=0;i<trait_count;i++) {
+				traits[i].dumpRawData(_newStream);
+			}
+			
+		}
 		public function dump(pre:String = "", indent:String="    ") :String {
 			var str:String = "";
 			

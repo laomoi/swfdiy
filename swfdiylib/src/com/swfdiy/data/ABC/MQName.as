@@ -24,6 +24,8 @@ package com.swfdiy.data.ABC
 		public function fullNameStr():String {
 			return nsStr() + "::" + nameStr();
 		}
+		
+		
 	
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";

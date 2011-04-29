@@ -22,7 +22,16 @@ package com.swfdiy.data.ABC
 			}
 			
 		}
-
+		
+		public function dumpRawData(_newStream:ABCStream):void {
+			var i:int;
+			_newStream.write_u32(cinit);
+			_newStream.write_u32(trait_count);
+		
+			for (i=0;i<trait_count;i++) {
+				traits[i].dumpRawData(_newStream);
+			}
+		}
 		
 		
 		public function dump(pre:String = "", indent:String="    ") :String {

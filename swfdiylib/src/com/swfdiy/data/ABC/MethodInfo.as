@@ -13,8 +13,11 @@ package com.swfdiy.data.ABC
 		public var param_type:Array;
 		public var name:int;
 		public var flags:int;
+		public var option_count:int;
 		public var option_info:OptionInfo;
 		public var param_names:Array;
+		
+		private var  options:Array;
 		
 		public static const 	NEED_ARGUMENTS:int = 0x01;//  Suggests to the run-time that an “arguments” object 
 		public static const	NEED_ACTIVATION :int = 0x02;//  Must be set if this method uses the newactivation opcode. 
@@ -38,8 +41,8 @@ package com.swfdiy.data.ABC
 			flags = stream.read_u8();
 			
 			if (flags & HAS_OPTIONAL) {
-				var option_count:int =  stream.read_u32();
-				var options:Array = [];
+				option_count =  stream.read_u32();
+				options = [];
 				for (i=param_count - option_count;i<param_count;i++) {// suck!
 					options[i] = new OptionDetail(stream.read_u32(), stream.read_u8());					
 				}
@@ -64,7 +67,35 @@ package com.swfdiy.data.ABC
 		public function nameStr() :String {
 			return name ? Global.STRING(name): "function";
 		}
+		public function dumpRawData(_newStream:ABCStream):void {
+			_newStream.write_u32(param_count);
+			_newStream.write_u32(return_type);
+			var i:int;
+			
+			for (i=0;i<param_count;i++) {
+				_newStream.write_u32(param_type[i]);
+			}
+			_newStream.write_u32(name);
+			_newStream.write_u8(flags);
 		
+			
+			if (flags & HAS_OPTIONAL) {
+				_newStream.write_u32(option_count);
+				for (i=param_count - option_count;i<param_count;i++) {// suck!
+					_newStream.write_u32(options[i].kind);
+					_newStream.write_u8(options[i].val);
+				}
+			}
+			
+			if (flags & HAS_PARAM_NAMES)
+			{
+				
+				for( i = 0; i < param_count; i++)
+				{
+					_newStream.write_u32(param_names[i]);
+				}
+			}
+		}
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			//set current abc to be the global abc so that the constant pool can be referered
 			

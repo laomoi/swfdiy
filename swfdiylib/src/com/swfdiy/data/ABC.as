@@ -10,6 +10,8 @@ package com.swfdiy.data
 	import com.swfdiy.data.ABC.MethodInfo;
 	import com.swfdiy.data.ABC.ScriptInfo;
 	
+	import flash.utils.ByteArray;
+	
 	
 	public class ABC
 	{
@@ -96,6 +98,47 @@ package com.swfdiy.data
 			}
 			trace("hello");
 			
+		}
+		
+		
+		public function dumpRawData(n:ByteArray):void {
+		
+			var i:int;
+			var newStream:ABCStream = new ABCStream(n);
+			newStream.write_u16(minor_version);
+			newStream.write_u16(major_version);
+			
+			constant_pool.dumpRawData(newStream);
+		
+			newStream.write_u32(method_count);
+			for (i=0;i<method_count;i++) {
+				methods[i].dumpRawData(newStream);
+			}
+		
+			newStream.write_u32(metadata_count);
+			for (i=0;i<metadata_count;i++) {
+				metadatas[i].dumpRawData(newStream);
+			}
+			
+			newStream.write_u32(class_count);
+			for (i=0;i<class_count;i++) {
+				instances[i].dumpRawData(newStream);
+			}
+			
+			for (i=0;i<class_count;i++) {
+				classes[i].dumpRawData(newStream);
+			}
+			
+			newStream.write_u32(script_count);
+			for (i=0;i<script_count;i++) {
+				scripts[i].dumpRawData(newStream);
+			}
+			
+			newStream.write_u32(method_body_count);
+			for (i=0;i<method_body_count;i++) {
+				method_bodys[i].dumpRawData(newStream);
+			}
+			/**/
 		}
 		
 		public function dump(pre:String = "", indent:String="    ") :String {	

@@ -16,6 +16,9 @@ package com.swfdiy.data.ABC
 		public function fullNameStr():String {
 			return nameStr();
 		}
+		
+
+		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
 			str += "name=" + nameStr(); 

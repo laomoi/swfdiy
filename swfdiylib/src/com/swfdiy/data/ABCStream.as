@@ -30,10 +30,19 @@ package com.swfdiy.data
 		public function read_u8():int {
 			return _data.readUnsignedByte();
 		}
+		public function write_u8(n:int):void {
+			_data.writeByte(n);
+		}
+		
 		
 		public function read_u16():int {
 			return _data.readUnsignedShort();
 		}
+		
+		public function write_u16(n:int):void {
+			_data.writeShort(n);
+		}
+		
 		public function read_string():String {
 		
 			var len:int = this.read_u32();
@@ -42,6 +51,11 @@ package com.swfdiy.data
 			
 			return str;
 			
+		}
+		
+		public function write_string(s:String):void {
+			this.write_u32(s.length);
+			_data.writeUTFBytes(s);
 		}
 		
 		
@@ -60,6 +74,13 @@ package com.swfdiy.data
 			return dest;
 		}
 		
+		public function write_bytes(b:ByteArray):void {
+			if (!b) {
+				return;
+			}
+			_data.writeBytes(b, 0);
+		}
+		
 		public function read_s24():int
 		{
 			var b:int = _data.readUnsignedByte();
@@ -67,6 +88,15 @@ package com.swfdiy.data
 			b |= _data.readByte()<<16;
 			return b
 		}
+		
+		public function write_s24(n:int):void
+		{
+			//1000 0000 0000 0000 0000 0000
+			_data.writeByte(n & 0x000000ff);
+			_data.writeByte((n & 0x0000ff00)>>8);
+			_data.writeByte(((n & 0x00ff0000)>>16) * (n <0 ? -1: 1) );
+		}
+		
 		/*
 		public function read_s24():int {
 			
@@ -121,8 +151,56 @@ package com.swfdiy.data
 			return   (result & 0x0fffffff) | (_data.readUnsignedByte()<<28);
 		}
 		
+		public function write_u32(n:int):void {
+			//0000 0000 ,1 0000000 ,1 0000000  ,1 0000000 ,1 0000000
+			var b:int = 0;
+			if (n & 0xf0000000) {
+				//have 5 bytes
+				b = 5;
+			} else if (n & 0xfe00000) {
+				b = 4;
+			} else if (n & 0x001fc000) {
+				b = 3;
+			} else if (n & 0x00003f80) {
+				b = 2;
+			} else {
+				b = 1;
+			}
+			
+			var t:int = (n & 0x0000007f) | (( b > 1? 1 : 0)<<7 );
+			_data.writeByte( t );
+				
+			if (b >1) {
+				t =  (n & 0x00003f80)>>7 | (( b > 2 ? 1 : 0)<<7 );
+				_data.writeByte( t  );
+			}
+			
+			if (b >2) {
+				t =  (n & 0x001fc000)>>14 | (( b > 3 ? 1 : 0)<< 7  );
+				_data.writeByte( t );
+			}
+			
+			if (b >3) {
+				t =  (n & 0xfe00000)>>21 | (( b > 4 ? 1 : 0)<< 7 ) ;
+				_data.writeByte( t );
+			}
+			
+			if (b >4) {
+				t = (n & 0xf0000000)>>28;
+				_data.writeByte( t   );
+			}
+			
+		}
+		
+		
+		
+		
 		public function readDouble():Number {
 			return _data.readDouble();
+		}
+		
+		public function writeDouble(n:Number):void {
+			return _data.writeDouble(n);
 		}
 		
 		public function get bytesAvailable():int {

@@ -26,6 +26,15 @@ package com.swfdiy.data.ABC
 			return strList;
 		}
 		
+		public function dumpRawData(_newStream:ABCStream):void {
+			_newStream.write_u32(count);
+			var j:int;
+			
+			for ( j=0;j<count;j++) {
+				_newStream.write_u32(ns[j]);
+			}
+		}
+		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
 			str += pre + "count=" + count + "\n";

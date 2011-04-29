@@ -31,6 +31,11 @@ package com.swfdiy.data.ABC
 			return Global.STRING(name);
 		}
 		
+		public function dumpRawData(_newStream:ABCStream):void {
+			_newStream.write_u8(kind);
+			_newStream.write_u32(name);
+		}
+		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
 			str += pre + "kind=" + kind + "," + Constant.toStr(kind) + "\n";

@@ -5,6 +5,8 @@
 
 	<fx:Script>
 		<![CDATA[
+			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.ABCStream;
 			import com.swfdiy.data.SWF;
 			import com.swfdiy.data.SWFTag;
 			import com.swfdiy.data.SWFTag.TagDoABC;
@@ -97,7 +99,7 @@
 						
 						
 						
-						save_file(tag_byte,abcTagCount + ".tag" );
+						save_file(tag_byte,"tagabcdump/" + abcTagCount + ".tag" );
 						
 						/*
 						var f:FileStream = new FileStream();
@@ -111,7 +113,10 @@
 						if (replaceABCTagN == abcTagCount) {
 							targetABCTag = tag_byte;
 						}
-						save_file(tagDoABC.get_abc_bytes(),abcTagCount + ".abc" );
+						
+						var pn:String = tagDoABC.Name.replace(/\//g, ".");
+						
+						save_file(tagDoABC.get_abc_bytes(),"abcdump/" + abcTagCount + '_' + pn + ".abc" );
 						
 						abcTagCount++;
 						
@@ -181,7 +186,104 @@
 				var file:File = File.desktopDirectory.resolvePath("uncompress.swf");
 				f.open(file,  FileMode.WRITE);
 				f.writeBytes(swf.get_uncompress_bytes(), 0);
+				f.close(); 
+			}
+
+
+			protected function onClickParseABC(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var a:ByteArray = new ByteArray;
+				var f:FileStream = new FileStream();
+				var file:File = File.desktopDirectory.resolvePath("test.abc");
+				f.open(file,  FileMode.READ);
+				f.readBytes(a,0);
 				f.close();
+				
+				
+				
+				var _abc:ABC = new ABC();
+				_abc.data = new ABCStream(a);
+				var sb:ByteArray = new ByteArray;
+				
+			
+				sb.writeUTFBytes(_abc.dump());
+				save_file(sb, "abc.dump");
+		
+				
+			}
+
+
+			protected function onMergeABC(event:MouseEvent):void
+			{
+				var a:ByteArray = new ByteArray;
+				var f:FileStream = new FileStream();
+				var file:File = File.desktopDirectory.resolvePath("1.abc");
+				f.open(file,  FileMode.READ);
+				f.readBytes(a,0);
+				f.close();
+				
+				var _abc1:ABC = new ABC();
+				_abc1.data = new ABCStream(a);
+				
+				
+				var b:ByteArray = new ByteArray;
+				var f:FileStream = new FileStream();
+				var file:File = File.desktopDirectory.resolvePath("2.abc");
+				f.open(file,  FileMode.READ);
+				f.readBytes(b,0);
+				f.close();
+				
+				var _abc2:ABC = new ABC();
+				_abc2.data = new ABCStream(b);
+				
+				
+				//start merge
+				
+				//save _abc1
+				
+				
+				
+				
+			}
+
+
+			protected function onParseDumpABC(event:MouseEvent):void
+			{
+				var a:ByteArray = new ByteArray;
+				var f:FileStream = new FileStream();
+				var file:File = File.desktopDirectory.resolvePath("test.abc");
+				f.open(file,  FileMode.READ);
+				f.readBytes(a,0);
+				f.close();
+				
+				
+				
+				var _abc:ABC = new ABC();
+				_abc.data = new ABCStream(a);
+				var sb:ByteArray = new ByteArray;
+				
+				_abc.dumpRawData(sb);
+				
+				//sb.writeUTFBytes(_abc.dump());
+				save_file(sb, "abc.dump.abc");
+			}
+
+
+			protected function onTestU32(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var sb:ByteArray = new ByteArray;
+				var stream:ABCStream = new ABCStream(sb);
+				stream.write_u32(120);
+				stream.write_u32(23443); //1 0110111  0010011
+				stream.write_u32(2324323);
+				stream.write_u32(999999999);
+				stream.pos = 0;
+				trace(stream.read_u32());
+				trace(stream.read_u32());
+				trace(stream.read_u32());
+				trace(stream.read_u32());
 			}
 
 		]]>	
@@ -192,6 +294,10 @@
 	</fx:Declarations>
 	<s:Button x="10" y="19" label="loadRead" click="onClickTest(event)"/>
 	<s:TextArea x="203" y="12" width="429" height="642" id="txt"/>
-	<s:Button x="10" y="48" label="INSERT TAG" click="onClickInsert(event)"/>
-	<s:Button x="29" y="99" label="Uncompress" click="onUncompress(event)"/>
+	<s:Button x="20" y="60" label="INSERT TAG" click="onClickInsert(event)"/>
+	<s:Button x="20" y="104" label="Uncompress" click="onUncompress(event)"/>
+	<s:Button x="20" y="161" label="parse test.abc" width="113" click="onClickParseABC(event)"/>
+	<s:Button x="21" y="232" label="merge 1.abc 2.abc" click="onMergeABC(event)"/>
+	<s:Button x="20" y="190" label="parse and dump test.abc" width="113" click="onParseDumpABC(event)"/>
+	<s:Button x="22" y="321" label="test read u32" click="onTestU32(event)"/>
 </s:WindowedApplication>

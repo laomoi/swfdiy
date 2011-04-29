@@ -150,6 +150,111 @@ package com.swfdiy.data.ABC
 			//strings[0] = "*"
 		}
 		
+		
+		public function dumpRawData(_newStream:ABCStream):void {
+			var i:int;
+			// ints
+			_newStream.write_u32(int_count);
+			for (i=1; i < int_count; i++) {
+				_newStream.write_u32(ints[i]);
+			}
+			
+			
+			// uints
+			_newStream.write_u32(uint_count);
+			for (i=1; i < uint_count; i++) {
+				_newStream.write_u32(uints[i]);
+			}
+			
+			
+			// doubles
+			_newStream.write_u32(double_count);
+			for (i=1; i < double_count; i++) {
+				_newStream.writeDouble(doubles[i]);
+			}
+			
+			
+			// strings
+			_newStream.write_u32(string_count);
+			for (i=1; i < string_count; i++) {
+				_newStream.write_string(strings[i]);
+			}
+			
+			// namespaces
+			_newStream.write_u32(namespace_count);
+			for (i=1; i < namespace_count; i++) {
+				namespaces[i].dumpRawData(_newStream);
+			}
+			
+			// namespace sets
+			_newStream.write_u32(ns_set_count);
+		
+			for (i=1; i < ns_set_count; i++)
+			{
+				ns_sets[i].dumpRawData(_newStream);
+			}
+			
+			
+			// multinames
+			_newStream.write_u32(multiname_count);
+			for (i=1; i < multiname_count; i++) {
+				var kind:int = multinames[i].kind;
+				_newStream.write_u8(kind);
+		
+				switch (kind)
+				{
+					case Constant.CONSTANT_QName:
+					case Constant.CONSTANT_QNameA:
+						_newStream.write_u32(multinames[i].data.ns);
+						_newStream.write_u32(multinames[i].data.name);
+						break;
+					
+					case Constant.CONSTANT_RTQName:
+					case Constant.CONSTANT_RTQNameA:
+						_newStream.write_u32(multinames[i].data.name);
+						break;
+					
+					case Constant.CONSTANT_RTQNameL:
+					case Constant.CONSTANT_RTQNameLA:
+						//
+						break;
+					
+					
+					case Constant.CONSTANT_Multiname:
+					case Constant.CONSTANT_MultinameA:
+						_newStream.write_u32(multinames[i].data.name);
+						_newStream.write_u32(multinames[i].data.ns_set);
+						break;
+					
+					case Constant.CONSTANT_MultinameL:
+					case Constant.CONSTANT_MultinameLA:
+						_newStream.write_u32(multinames[i].data.name);			
+						break;
+					/*NOT MENTION IN AVM2, COPRY FROM adbdump.as*/
+					case Constant.CONSTANT_NameL:
+					case Constant.CONSTANT_NameLA:
+						//multinames[i] = new Multiname(kind, new MQName(0, 0));
+						break;
+					case Constant.CONSTANT_TypeName:
+						_newStream.write_u32(multinames[i].data.name);	
+						var types :Array = multinames[i].data.types;
+						_newStream.write_u32(types.length);
+						
+						for( var t:int=0; t < types.length; ++t ) {
+							_newStream.write_u32(types[i]);
+						}
+						
+						break;
+					
+					default:
+						
+				}
+				
+			}
+		}
+			
+		
+		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
 			var i:int =0;

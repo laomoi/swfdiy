@@ -51,6 +51,32 @@ package com.swfdiy.data.ABC
 			_parseCode();
 		}
 		
+		
+		public function dumpRawData(_newStream:ABCStream):void {
+			var i:int;
+			_newStream.write_u32(method);
+			_newStream.write_u32(max_stack);
+			_newStream.write_u32(local_count);
+			_newStream.write_u32(init_scope_depth);
+			_newStream.write_u32(max_scope_depth);
+			_newStream.write_u32(code_length);
+			_newStream.write_bytes(code);//this should be changed in future 
+			_newStream.write_u32(exception_count);
+			
+		
+			for (i=0;i<exception_count;i++) {
+				_newStream.write_u32(exceptions[i].from);
+				_newStream.write_u32(exceptions[i].to);
+				_newStream.write_u32(exceptions[i].target);
+				_newStream.write_u32(exceptions[i].exc_type);
+				_newStream.write_u32(exceptions[i].var_name);
+			}
+			_newStream.write_u32(trait_count);
+			for (i=0;i<trait_count;i++) {
+				traits[i].dumpRawData(_newStream);
+			}
+		}
+		
 		private var _indent :String="    ";
 		private function _parseCode():void {
 			opcodes = [];

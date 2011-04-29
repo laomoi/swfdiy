@@ -27,6 +27,7 @@ package com.swfdiy.data.ABC
 		}
 		
 		
+		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
 			str += pre + "kind=" + kind + "," + Constant.toStr(kind) + "\n";

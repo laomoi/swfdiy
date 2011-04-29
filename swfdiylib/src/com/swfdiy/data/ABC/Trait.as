@@ -6,9 +6,18 @@ package com.swfdiy.data.ABC
 	{
 		public var name:int;
 		public var kind:int;
+		public var kind_byte:int;
 		public var data:*;
 		public var metadata_count:int;
 		public var metadatas:Array;
+		
+		
+		private var u1:int;
+		private var u2:int;
+		private var u3:int;
+		private var u4:int;
+		
+	
 		
 		
 		public static const Trait_Slot:int = 0;
@@ -58,17 +67,17 @@ package com.swfdiy.data.ABC
 		{
 			var i:int;
 			name = stream.read_u32();
-			var kind_byte:int = stream.read_u8();
+			kind_byte = stream.read_u8();
 			kind = kind_byte & 0xf;
 			var trait_attr:int = kind_byte >>4;
 			
 			switch (kind) {
 				case Trait.Trait_Slot:
 				case Trait.Trait_Const:
-					var u1:int = stream.read_u32();
-					var u2:int = stream.read_u32();
-					var u3:int = stream.read_u32();
-					var u4:int = 0;
+					u1 = stream.read_u32();
+					u2 = stream.read_u32();
+					u3 = stream.read_u32();
+					u4 = 0;
 					if (u3) {
 						u4 = stream.read_u8();
 					}
@@ -103,7 +112,46 @@ package com.swfdiy.data.ABC
 			
 		}
 		
-		
+		public function dumpRawData(_newStream:ABCStream):void {
+			_newStream.write_u32(name);
+			_newStream.write_u8(kind_byte);
+			var trait_attr:int = kind_byte >>4;
+			var i:int;
+			switch (kind) {
+				case Trait.Trait_Slot:
+				case Trait.Trait_Const:
+					_newStream.write_u32(u1);
+					_newStream.write_u32(u2);
+					_newStream.write_u32(u3);
+					if (u3) {
+						_newStream.write_u8(u4);
+					}
+					break;						
+				
+				case Trait.Trait_Class:
+					_newStream.write_u32(data.slot_id);
+					_newStream.write_u32(data.classi);
+					break;
+				case Trait.Trait_Function:
+					_newStream.write_u32(data.slot_id);
+					_newStream.write_u32(data.mfunction);
+					break;
+				case Trait.Trait_Method:	
+				case Trait.Trait_Getter:
+				case Trait.Trait_Setter:
+					_newStream.write_u32(data.disp_id);
+					_newStream.write_u32(data.method);
+					break;
+				
+			}
+			
+			if (trait_attr & Trait.ATTR_Metadata  ) {
+				_newStream.write_u32(metadata_count);
+				for (i=0;i<metadata_count;i++) {
+					_newStream.write_u32(metadatas[i]);
+				}
+			}
+		}
 		
 		public function dump(pre:String = "", indent:String="    ") :String {
 			var str:String = "";
