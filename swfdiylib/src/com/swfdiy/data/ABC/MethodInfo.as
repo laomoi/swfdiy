@@ -4,6 +4,7 @@ package com.swfdiy.data.ABC
 	import com.swfdiy.data.ABC.MNamespace;
 	import com.swfdiy.data.ABC.NamespaceSet;
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
 
 	
 	public class MethodInfo
@@ -127,8 +128,36 @@ package com.swfdiy.data.ABC
 			}
 			
 			
-			
 			return str;
+		}
+		
+		
+		public function updateIndex(map:IndexMap):void {
+			return_type = map.multinamesMap[return_type];
+			
+			var i:int;
+			
+			for (i=0;i<param_count;i++) {
+				param_type[i] = map.multinamesMap[param_type[i]];
+			}
+			
+			name = map.stringsMap[name];
+			
+			
+			if (flags & HAS_OPTIONAL) {
+				for (i=param_count - option_count;i<param_count;i++) {// suck!
+					options[i].updateIndex(map);
+				}
+			}
+			
+			if (flags & HAS_PARAM_NAMES)
+			{
+				
+				for( i = 0; i < param_count; i++)
+				{
+					param_names[i] = map.stringsMap[param_names[i]];
+				}
+			}
 		}
 	}
 }

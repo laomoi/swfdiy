@@ -1,6 +1,8 @@
 package com.swfdiy.data.ABC
 {
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class ScriptInfo
 	{
 		public var init:int;
@@ -42,6 +44,15 @@ package com.swfdiy.data.ABC
 			}
 			
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			init =map.methodsMap[init];
+			
+			var i:int;
+			for (i=0;i<trait_count;i++) {				
+				traits[i].updateIndex(map);
+			}
 		}
 	}
 }

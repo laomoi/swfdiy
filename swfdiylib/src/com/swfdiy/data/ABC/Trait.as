@@ -2,6 +2,8 @@ package com.swfdiy.data.ABC
 {
 	import com.swfdiy.data.ABC.Constant;
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class Trait
 	{
 		public var name:int;
@@ -120,11 +122,12 @@ package com.swfdiy.data.ABC
 			switch (kind) {
 				case Trait.Trait_Slot:
 				case Trait.Trait_Const:
-					_newStream.write_u32(u1);
-					_newStream.write_u32(u2);
-					_newStream.write_u32(u3);
+					
+					_newStream.write_u32(data.slot_id);
+					_newStream.write_u32(data.type_name);
+					_newStream.write_u32(data.vindex);
 					if (u3) {
-						_newStream.write_u8(u4);
+						_newStream.write_u8(data.vkind);
 					}
 					break;						
 				
@@ -171,6 +174,39 @@ package com.swfdiy.data.ABC
 			}
 			
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			name = map.multinamesMap[name];
+			var trait_attr:int = kind_byte >>4;
+			var i:int;
+			switch (kind) {
+				case Trait.Trait_Slot:
+				case Trait.Trait_Const:
+					//type name
+					data.type_name = map.multinamesMap[data.type_name];
+					
+					break;						
+				
+				case Trait.Trait_Class:
+					data.classi = map.classesMap[data.classi];
+					break;
+				case Trait.Trait_Function:
+					data.mfunction = map.methodsMap[data.mfunction];
+					break;
+				case Trait.Trait_Method:	
+				case Trait.Trait_Getter:
+				case Trait.Trait_Setter:
+					data.method = map.methodsMap[data.method];
+					break;
+				
+			}
+			
+			if (trait_attr & Trait.ATTR_Metadata  ) {
+				for (i=0;i<metadata_count;i++) {
+					metadatas[i] = map.metadatasMap[metadatas[i] ];
+				}
+			}
 		}
 		
 	}

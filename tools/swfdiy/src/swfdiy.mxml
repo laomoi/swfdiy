@@ -6,11 +6,13 @@
 	<fx:Script>
 		<![CDATA[
 			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.ABC.ConstantPool;
 			import com.swfdiy.data.ABCStream;
 			import com.swfdiy.data.SWF;
 			import com.swfdiy.data.SWFTag;
 			import com.swfdiy.data.SWFTag.TagDoABC;
 			import com.swfdiy.data.SWFTag.TagSymbolClass;
+			import com.swfdiy.data.helper.IndexMap;
 			
 			import flash.display.Loader;
 			import flash.net.FileReference;
@@ -20,10 +22,8 @@
 			import mx.core.UIComponent;
 			import mx.events.ItemClickEvent;
 			
-		
 			
-			private var file:FileReference;
-			private var file2:FileReference;
+			
 			[Bindable]
 			private var symbolList:ArrayCollection;
 			
@@ -36,26 +36,16 @@
 			
 			protected function onClickTest(event:MouseEvent):void
 			{
-				file = new FileReference();
-				file.addEventListener(Event.SELECT, selectHandler);
-				
 				var allFilter:FileFilter = new FileFilter("swf (*.swf)", "*.swf");
 				
-				file.browse(new Array(allFilter));
+				Utils.openAndReadFile(_onClickTest, allFilter);
 			}
 			
-			private function selectHandler(event:Event):void {
-				file.addEventListener(Event.COMPLETE, onLoadComplete);				
-				file.load(); 
-			}
-			
-			private function onLoadComplete(event:Event):void {			
+			private function _onClickTest(data:Array, files:Array):void {			
 				//loader = new Loader();
 				//loader.loadBytes(file.data);
 				
-				
-				swf = new SWF(file.data);
-				
+				swf = new SWF(data[0]);
 				
 				swf.startReadTags();				
 				//symbolList = new ArrayCollection();
@@ -98,8 +88,10 @@
 						
 						
 						
+						if (needTag.selected) {
+							save_file(tag_byte,files[0] + "_tag/" + abcTagCount + ".tag" );
+						}
 						
-						save_file(tag_byte,"tagabcdump/" + abcTagCount + ".tag" );
 						
 						/*
 						var f:FileStream = new FileStream();
@@ -116,8 +108,10 @@
 						
 						var pn:String = tagDoABC.Name.replace(/\//g, ".");
 						
-						save_file(tagDoABC.get_abc_bytes(),"abcdump/" + abcTagCount + '_' + pn + ".abc" );
-						
+						if (needABC.selected){
+							
+							save_file(tagDoABC.get_abc_bytes(),files[0] + "_abc/" + abcTagCount + '_' + pn + ".abc" );
+						}
 						abcTagCount++;
 						
 						
@@ -125,14 +119,13 @@
 					
 					tags_bytes.push(tag_byte);
 					
-					var sb:ByteArray = new ByteArray;
-					sb.writeUTFBytes(dump_str);
-					save_file(sb, "dump.txt");
+					
 				}
 				
-				//symbolList.source.sort(Array.CASEINSENSITIVE);
 				
-				//currentState = "Opened";			
+				var sb:ByteArray = new ByteArray;
+				sb.writeUTFBytes(dump_str);
+				save_file(sb, files[0] + ".dump.txt");
 				
 			}
 			
@@ -142,24 +135,18 @@
 				f.open(file,  FileMode.WRITE);
 				f.writeBytes(data, 0);
 				f.close();
+				
+				txt.appendText("saved.." + fileName + "\n");
 			}
 			
 			protected function onClickInsert(event:MouseEvent):void
 			{
-				file2 = new FileReference();
-				file2.addEventListener(Event.SELECT, selectHandler2);
-				
 				var allFilter:FileFilter = new FileFilter("tag (*.tag)", "*.tag");
-				
-				file2.browse(new Array(allFilter));
+				Utils.openAndReadFile(_onClickInsert, allFilter);
 			}
 			
-			private function selectHandler2(event:Event):void {
-				file2.addEventListener(Event.COMPLETE, onLoadComplete2);				
-				file2.load(); 
-			}
 			
-			private function onLoadComplete2(event:Event):void {	
+			private function _onClickInsert(data:Array, files:Array):void {	
 				
 				//replace
 				var new_tags_bytes:Array = [];
@@ -167,14 +154,14 @@
 					if (tags_bytes[i]!=targetABCTag) {
 						new_tags_bytes.push(tags_bytes[i]);
 					} else {
-						new_tags_bytes.push(file2.data);
+						new_tags_bytes.push(data[0]);
 					}
 						
 				}
 				
 				var new_swf_bytes:ByteArray = swf.make_swf_bytes_from_tags(new_tags_bytes);
 				var f:FileStream = new FileStream();
-				var file:File = File.desktopDirectory.resolvePath("new.swf");
+				var file:File = File.desktopDirectory.resolvePath(files[0] + ".new.swf");
 				f.open(file,  FileMode.WRITE);
 				f.writeBytes(new_swf_bytes, 0);
 				f.close();
@@ -189,84 +176,157 @@
 				f.close(); 
 			}
 
-
 			protected function onClickParseABC(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
-				var a:ByteArray = new ByteArray;
-				var f:FileStream = new FileStream();
-				var file:File = File.desktopDirectory.resolvePath("test.abc");
-				f.open(file,  FileMode.READ);
-				f.readBytes(a,0);
-				f.close();
-				
-				
-				
+				var allFilter:FileFilter = new FileFilter("abc (*.abc)", "*.abc");
+
+				Utils.openAndReadFile(_onClickParseABC, allFilter);
+			}
+			
+			private function _onClickParseABC(datas:Array, files:Array):void {
 				var _abc:ABC = new ABC();
+				var a:ByteArray = datas[0];
 				_abc.data = new ABCStream(a);
 				var sb:ByteArray = new ByteArray;
 				
-			
+				
 				sb.writeUTFBytes(_abc.dump());
-				save_file(sb, "abc.dump");
-		
+				save_file(sb, files[0] + ".txt");
 				
 			}
+				
+				
 
 
 			protected function onMergeABC(event:MouseEvent):void
 			{
-				var a:ByteArray = new ByteArray;
-				var f:FileStream = new FileStream();
-				var file:File = File.desktopDirectory.resolvePath("1.abc");
-				f.open(file,  FileMode.READ);
-				f.readBytes(a,0);
-				f.close();
+				var allFilter:FileFilter = new FileFilter("abc (*.abc)", "*.abc");
 				
+				Utils.openAndReadFiles(_onMergeABC, allFilter);
+			}
+			
+			private function _onMergeABC(datas:Array, files:Array): void {
+				if (files.length < 2) {
+					return;
+				}
 				var _abc1:ABC = new ABC();
-				_abc1.data = new ABCStream(a);
+				_abc1.data = new ABCStream(datas[0]);
 				
-				
-				var b:ByteArray = new ByteArray;
-				var f:FileStream = new FileStream();
-				var file:File = File.desktopDirectory.resolvePath("2.abc");
-				f.open(file,  FileMode.READ);
-				f.readBytes(b,0);
-				f.close();
-				
-				var _abc2:ABC = new ABC();
-				_abc2.data = new ABCStream(b);
+				var i:int;
+				var abc_else_list:Array = [];
+				for (i=1;i<datas.length;i++) {
+					var _abc2:ABC = new ABC();
+					_abc2.data = new ABCStream(datas[i]);
+					abc_else_list.push(_abc2);
+				}
 				
 				
 				//start merge
 				
+				//insert constantpool , don't fix the duplicated string or numbers
+				var map:IndexMap = new IndexMap;
+				
+				for (i=0;i<abc_else_list.length;i++) {
+					_abc1.merge(abc_else_list[i], map);
+					abc_else_list[i].updateIndex(map);
+				}
+				
+				
+				//insert else of abc2 to abc1
+				//..
+				
 				//save _abc1
 				
+				var sb:ByteArray = new ByteArray;
+				var str:String = files[0] + '___merge.abc';
+				_abc1.dumpRawData(sb);
+				save_file(sb, str);
 				
-				
+				sb = new ByteArray;
+				sb.writeUTFBytes(_abc1.dump());
+				str = files[0] + '___merge.txt';
+				save_file(sb, str);
 				
 			}
 
 
 			protected function onParseDumpABC(event:MouseEvent):void
 			{
-				var a:ByteArray = new ByteArray;
-				var f:FileStream = new FileStream();
-				var file:File = File.desktopDirectory.resolvePath("test.abc");
-				f.open(file,  FileMode.READ);
-				f.readBytes(a,0);
-				f.close();
+				var allFilter:FileFilter = new FileFilter("abc (*.abc)", "*.abc");
+				
+				Utils.openAndReadFiles(_onParseDumpABC, allFilter);
+			}
+			
+			private function _onParseDumpABC(datas:Array, files:Array):void {
 				
 				
-				
-				var _abc:ABC = new ABC();
-				_abc.data = new ABCStream(a);
+				var abc:ABC = new ABC();
+				abc.data = new ABCStream(datas[0]);
 				var sb:ByteArray = new ByteArray;
+				var pool:ConstantPool = abc.constant_pool;
+				var map:IndexMap = new IndexMap;
+				//merge classes, instances, scripts
+				var i:int;
 				
-				_abc.dumpRawData(sb);
+				for (i=1;i<pool.int_count;i++) {
+					map.add("int", i, i);
 				
-				//sb.writeUTFBytes(_abc.dump());
-				save_file(sb, "abc.dump.abc");
+				}
+				
+				for (i=1;i<pool.uint_count;i++) {
+					map.add("uint", i, i);
+				}
+				
+				for (i=1;i<pool.double_count;i++) {
+					map.add("double", i, i);
+				}
+				
+				for (i=1;i<pool.string_count;i++) {
+					map.add("string", i, i);
+				}
+				
+				for (i=1;i<pool.namespace_count;i++) {
+					map.add("namespace", i, i);
+				}
+				
+				for (i=1;i<pool.ns_set_count;i++) {
+					map.add("ns_set", i, i);
+				}
+				
+				for (i=1;i<pool.multiname_count;i++) {
+					map.add("multiname", i, i);
+				}
+				
+				
+				for (i=0;i<abc.method_count;i++) {
+					map.add("method", i, i);
+				}
+				
+				for (i=0;i<abc.metadata_count;i++) {
+					map.add("metadata", i, i);
+				}
+				
+				
+				for (i=0;i<abc.class_count;i++) {
+					map.add("class", i, i);
+					map.add("instance", i, i);
+				}
+				
+				
+				for (i=0;i<abc.script_count;i++) {
+					map.add("script", i, i);
+				}
+				
+				for (i=0;i<abc.method_body_count;i++) {
+					map.add("methodbody", i, i);
+				}
+				
+				
+				abc.updateIndex(map);
+				
+				abc.dumpRawData(sb);
+				
+				save_file(sb, files[0] + '.test.abc');
 			}
 
 
@@ -292,12 +352,14 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Button x="10" y="19" label="loadRead" click="onClickTest(event)"/>
-	<s:TextArea x="203" y="12" width="429" height="642" id="txt"/>
-	<s:Button x="20" y="60" label="INSERT TAG" click="onClickInsert(event)"/>
-	<s:Button x="20" y="104" label="Uncompress" click="onUncompress(event)"/>
-	<s:Button x="20" y="161" label="parse test.abc" width="113" click="onClickParseABC(event)"/>
-	<s:Button x="21" y="232" label="merge 1.abc 2.abc" click="onMergeABC(event)"/>
-	<s:Button x="20" y="190" label="parse and dump test.abc" width="113" click="onParseDumpABC(event)"/>
-	<s:Button x="22" y="321" label="test read u32" click="onTestU32(event)"/>
+	<s:Button x="25" y="99" label="swf -&gt; txt  (tag|abc)" click="onClickTest(event)" width="122"/>
+	<s:TextArea x="326" y="12" width="306" height="642" id="txt"/>
+	<s:Button x="24" y="40" label="INSERT TAG" click="onClickInsert(event)" enabled="false"/>
+	<s:Button x="25" y="69" label="Uncompress" click="onUncompress(event)" enabled="false"/>
+	<s:Button x="24" y="128" label="abc-&gt;txt" width="123" click="onClickParseABC(event)"/>
+	<s:Button x="24" y="193" label="abc + abc -&gt; abc|txt" click="onMergeABC(event)" width="148"/>
+	<s:Button x="25" y="160" label="test abc-&gt;abc" width="122" click="onParseDumpABC(event)"/>
+	<s:Button x="24" y="357" label="test read u32" click="onTestU32(event)"/>
+	<s:CheckBox x="155" y="100" label="abctag" id="needTag"/>
+	<s:CheckBox x="217" y="100" label="abc" id="needABC" width="47" selected="true"/>
 </s:WindowedApplication>

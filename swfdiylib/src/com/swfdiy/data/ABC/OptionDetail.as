@@ -1,7 +1,9 @@
 package com.swfdiy.data.ABC
 {
-	import com.swfdiy.data.ABC.Global;
 	import com.swfdiy.data.ABC.Constant;
+	import com.swfdiy.data.ABC.Global;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class OptionDetail
 	{
 		
@@ -68,7 +70,51 @@ package com.swfdiy.data.ABC
 			return str;
 		}
 		
-		
+		public function updateIndex(map:IndexMap):void {
+			switch (kind) {
+				case 	Constant.CONSTANT_Int:
+					val = map.intsMap[val];
+					break;
+				case	Constant.CONSTANT_UInt:
+					val = map.uintsMap[val];
+					break;
+				case	Constant.CONSTANT_Double:
+					val = map.doublesMap[val];
+					break; 
+				case	Constant.CONSTANT_Utf8:
+					val = map.stringsMap[val];
+					break;
+				case	Constant.CONSTANT_True:
+					break;
+				case	Constant.CONSTANT_False:
+					break;
+				case	Constant.CONSTANT_Null:
+					break;
+				case	Constant.CONSTANT_Undefined:
+					break;
+				case	Constant.CONSTANT_Namespace :
+					val = map.namespaceMap[val];
+					break;
+				case	Constant.CONSTANT_PackageNamespace:
+					val = map.namespaceMap[val];
+					break;
+				case	Constant.CONSTANT_PackageInternalNs:
+					val = map.namespaceMap[val];
+					break;
+				case	Constant.CONSTANT_ProtectedNamespace:
+					val = map.namespaceMap[val];
+					break;
+				case	Constant.CONSTANT_ExplicitNamespace:
+					val = map.namespaceMap[val];
+					break;
+				case	Constant.CONSTANT_StaticProtectedNs:
+					val = map.namespaceMap[val];
+					break;
+				case	Constant.CONSTANT_PrivateNs:
+					val = map.namespaceMap[val];
+					break;
+			}
+		}
 		
 		
 		

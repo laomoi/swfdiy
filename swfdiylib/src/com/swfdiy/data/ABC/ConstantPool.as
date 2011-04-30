@@ -4,6 +4,8 @@ package com.swfdiy.data.ABC
 	import com.swfdiy.data.ABC.MNamespace;
 	import com.swfdiy.data.ABC.NamespaceSet;
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class ConstantPool
 	{
 		public var int_count:int;
@@ -306,6 +308,63 @@ package com.swfdiy.data.ABC
 			}
 			
 			return str;
+		}
+		
+		
+		
+		public function merge(pool:ConstantPool, map:IndexMap):void {
+			
+			var i:int;
+			var j:int;
+			
+			for (i=1;i<pool.int_count;i++) {
+				map.add("int", i, ints.length);
+				ints.push(pool.ints[i]);
+				int_count++;
+			}
+			
+			for (i=1;i<pool.uint_count;i++) {
+				map.add("unit", i, uints.length);
+				uints.push(pool.uints[i]);
+				uint_count++;
+			}
+			
+			for (i=1;i<pool.double_count;i++) {
+				map.add("double", i, doubles.length);
+				doubles.push(pool.doubles[i]);
+				double_count++;
+			}
+			
+			for (i=1;i<pool.string_count;i++) {
+				map.add("string", i, strings.length);
+				strings.push(pool.strings[i]);
+				string_count++;
+			}
+			
+			for (i=1;i<pool.namespace_count;i++) {
+				map.add("namespace", i, namespaces.length);
+				
+				//update namespace inner index
+				pool.namespaces[i].updateIndex(map);
+				namespaces.push(pool.namespaces[i]);
+				namespace_count++;
+			}
+			
+			for (i=1;i<pool.ns_set_count;i++) {
+				map.add("ns_set", i, ns_sets.length);
+				pool.ns_sets[i].updateIndex(map);
+				ns_sets.push(pool.ns_sets[i]);
+				ns_set_count++;
+			}
+			
+			for (i=1;i<pool.multiname_count;i++) {
+				map.add("multiname", i, multinames.length);
+				pool.multinames[i].updateIndex(map);
+				multinames.push(pool.multinames[i]);
+				multiname_count++;
+			}
+			
+			
 		}
 	}
 }

@@ -1,7 +1,9 @@
 package com.swfdiy.data.ABC
 {
-	import com.swfdiy.data.ABCStream;
 	import com.swfdiy.data.ABC.Global;
+	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class MetadataInfo
 	{
 		public var name:int;
@@ -43,6 +45,15 @@ package com.swfdiy.data.ABC
 			
 			
 			return str;
+		}
+		
+		
+		public function updateIndex(map:IndexMap):void {
+			name =map.stringsMap[name];
+			var i :int;
+			for (i=0;i<item_count;i++) {
+				items[i].updateIndex(map);
+			}
 		}
 	}
 }

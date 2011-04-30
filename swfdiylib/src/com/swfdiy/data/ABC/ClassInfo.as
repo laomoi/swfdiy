@@ -3,6 +3,8 @@ package com.swfdiy.data.ABC
 	import com.swfdiy.data.ABC.Constant;
 	import com.swfdiy.data.ABC.Trait;
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class ClassInfo
 	{
 		public var cinit:int;
@@ -47,6 +49,15 @@ package com.swfdiy.data.ABC
 			}
 			
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			cinit =map.methodsMap[cinit];
+			
+			var i:int;
+			for (i=0;i<trait_count;i++) {				
+				traits[i].updateIndex(map);
+			}
 		}
 	}
 }

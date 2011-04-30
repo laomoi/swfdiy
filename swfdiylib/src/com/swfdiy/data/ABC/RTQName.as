@@ -1,5 +1,7 @@
 package com.swfdiy.data.ABC
 {
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class RTQName
 	{
 		public var name:int;
@@ -23,6 +25,10 @@ package com.swfdiy.data.ABC
 			var str:String = "";
 			str += "name=" + nameStr(); 
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			name = map.stringsMap[name];
 		}
 	}
 }

@@ -1,6 +1,8 @@
 package com.swfdiy.data.ABC
 {
 	import com.swfdiy.data.ABC.Global;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class MMultiname
 	{
 		public var name:int;
@@ -36,6 +38,12 @@ package com.swfdiy.data.ABC
 				
 			str += "name=" + nameStr(); 
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			name = map.stringsMap[name];
+			ns_set = map.ns_setsMap[ns_set];
+			
 		}
 	}
 }

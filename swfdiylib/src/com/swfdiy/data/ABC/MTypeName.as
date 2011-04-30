@@ -1,5 +1,7 @@
 package com.swfdiy.data.ABC
 {
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class MTypeName
 	{
 		public var name:int;
@@ -22,6 +24,14 @@ package com.swfdiy.data.ABC
 			var str:String = "";
 			str += pre + ",name=" + nameStr(); 
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			name = map.stringsMap[name];
+			//I am not sure about the types, I didn't get any docs about it. 
+			//TBD..
+			
+			
 		}
 		
 	}

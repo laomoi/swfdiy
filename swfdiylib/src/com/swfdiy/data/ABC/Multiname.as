@@ -3,6 +3,8 @@ package com.swfdiy.data.ABC
 	import com.swfdiy.data.ABC.ConstantPool;
 	import com.swfdiy.data.ABC.Global;
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class Multiname
 	{
 		public var kind:int;
@@ -36,6 +38,11 @@ package com.swfdiy.data.ABC
 			}
 			
 			return str;
+		}
+		
+		
+		public function updateIndex(map:IndexMap):void {
+			data.updateIndex(map);
 		}
 	}
 	

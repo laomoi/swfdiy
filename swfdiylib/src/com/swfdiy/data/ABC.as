@@ -9,9 +9,10 @@ package com.swfdiy.data
 	import com.swfdiy.data.ABC.MethodBody;
 	import com.swfdiy.data.ABC.MethodInfo;
 	import com.swfdiy.data.ABC.ScriptInfo;
+	import com.swfdiy.data.helper.IndexMap;
 	
 	import flash.utils.ByteArray;
-	
+
 	
 	public class ABC
 	{
@@ -195,6 +196,76 @@ package com.swfdiy.data
 			return str;
 		}
 		
+		
+		public function merge(abc:ABC, map:IndexMap):void {
+			constant_pool.merge(abc.constant_pool, map);
+			
+			//merge classes, instances, scripts
+			var i:int;
+			for (i=0;i<abc.method_count;i++) {
+				map.add("method", i, methods.length);
+				methods.push(abc.methods[i]); 
+				method_count++;
+			}
+			
+		
+			
+			for (i=0;i<abc.metadata_count;i++) {
+				map.add("metadata", i, metadatas.length);
+				metadatas.push(abc.metadatas[i]); 
+				metadata_count++;
+			}
+			
+			
+			for (i=0;i<abc.class_count;i++) {
+				map.add("class", i, classes.length);
+				map.add("instance", i, classes.length);
+				classes.push(abc.classes[i]); 
+				instances.push(abc.instances[i]); 
+				class_count++;
+			}
+			
+			
+			for (i=0;i<abc.script_count;i++) {
+				map.add("script", i, scripts.length);
+				scripts.push(abc.scripts[i]); 
+				script_count++;
+			}
+			
+			for (i=0;i<abc.method_body_count;i++) {
+				map.add("methodbody", i, method_bodys.length);
+				method_bodys.push(abc.method_bodys[i]); 
+				method_body_count++;
+			}
+			
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			var i:int;
+			for (i=0;i<method_count;i++) {
+				methods[i].updateIndex(map);
+			}
+			
+			for (i=0;i<metadata_count;i++) {
+				metadatas[i].updateIndex(map);
+			}
+			
+			for (i=0;i<class_count;i++) {
+				instances[i].updateIndex(map);
+			}
+			
+			for (i=0;i<class_count;i++) {
+				classes[i].updateIndex(map);
+			}
+			
+			for (i=0;i<script_count;i++) {
+				scripts[i].updateIndex(map);
+			}
+			
+			for (i=0;i<method_body_count;i++) {
+				method_bodys[i].updateIndex(map);
+			}
+		}
 		
 	}
 }

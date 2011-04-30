@@ -3,6 +3,8 @@ package com.swfdiy.data.ABC
 	import com.swfdiy.data.ABC.Constant;
 	import com.swfdiy.data.ABC.Global;
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class NamespaceSet
 	{
 		public var count:int;
@@ -46,6 +48,12 @@ package com.swfdiy.data.ABC
 				str += nameStrList().join("|")  + "\n"; 
 			}
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			for (var i:int=0;i <count;i++) {
+				ns[i] = map.namespaceMap[ns[i]];
+			}
 		}
 	}
 }

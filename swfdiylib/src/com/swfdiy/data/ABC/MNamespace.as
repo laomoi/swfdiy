@@ -1,9 +1,11 @@
 package com.swfdiy.data.ABC
 {
-	import com.swfdiy.data.ABC.ConstantPool;
-	import com.swfdiy.data.ABCStream;
 	import com.swfdiy.data.ABC.Constant;
+	import com.swfdiy.data.ABC.ConstantPool;
 	import com.swfdiy.data.ABC.Global;
+	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class MNamespace
 	{
 		public var kind:int;
@@ -41,6 +43,10 @@ package com.swfdiy.data.ABC
 			str += pre + "kind=" + kind + "," + Constant.toStr(kind) + "\n";
 			str += pre + "name=" + name + "," + nameStr() + "\n";
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			name = map.stringsMap[name];
 		}
 	}
 }

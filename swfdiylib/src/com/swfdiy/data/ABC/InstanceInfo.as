@@ -3,6 +3,8 @@ package com.swfdiy.data.ABC
 	import com.swfdiy.data.ABC.Constant;
 	import com.swfdiy.data.ABC.Trait;
 	import com.swfdiy.data.ABCStream;
+	import com.swfdiy.data.helper.IndexMap;
+
 	public class InstanceInfo
 	{
 		public var name:int;
@@ -97,6 +99,22 @@ package com.swfdiy.data.ABC
 			}
 			
 			return str;
+		}
+		
+		public function updateIndex(map:IndexMap):void {
+			name =map.multinamesMap[name];
+			super_name = map.multinamesMap[super_name];
+			if (flags & Constant.CONSTANT_ClassProtectedNs) {
+				protectedNs = map.namespaceMap[protectedNs];
+			}
+			var i :int;
+			for (i=0;i<intrf_count;i++) {				
+				interfaces[i] = map.multinamesMap[interfaces[i]];
+			}
+			iint = map.methodsMap[iint];
+			for (i=0;i<trait_count;i++) {				
+				 traits[i].updateIndex(map);
+			}
 		}
 	}
 }
