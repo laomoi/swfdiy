@@ -9,7 +9,7 @@ package com.swfdiy.data.ABC
 		
 		public var kind:int;
 		public var val:int;
-		public function OptionDetail(_kind:int, _val:int)
+		public function OptionDetail( _val:int, _kind:int)
 		{
 			kind = _kind;
 			val = _val;

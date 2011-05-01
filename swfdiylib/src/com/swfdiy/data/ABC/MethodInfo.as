@@ -83,8 +83,8 @@ package com.swfdiy.data.ABC
 			if (flags & HAS_OPTIONAL) {
 				_newStream.write_u32(option_count);
 				for (i=param_count - option_count;i<param_count;i++) {// suck!
-					_newStream.write_u32(options[i].kind);
-					_newStream.write_u8(options[i].val);
+					_newStream.write_u32(options[i].val);
+					_newStream.write_u8(options[i].kind);
 				}
 			}
 			
