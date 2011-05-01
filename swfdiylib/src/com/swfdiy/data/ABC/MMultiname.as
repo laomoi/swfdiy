@@ -8,10 +8,10 @@ package com.swfdiy.data.ABC
 		public var name:int;
 		public var ns_set:int;
 		
-		public function MMultiname(_name:int, _ns_set:int) {
-			
-			name = _name;
+
+		public function MMultiname( _ns_set:int, _name:int) {
 			ns_set = _ns_set;
+			name = _name;
 		}
 		
 		
@@ -27,16 +27,16 @@ package com.swfdiy.data.ABC
 		}
 		
 		public function fullNameStr():String {
-			return nsStr() + "::" + nameStr();
+			return "MM-" + nsStr() + "::" + nameStr();
 		}
 		
 
 		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
-			str += pre + "ns=" + nsStr() + ","; 
+			str += pre + "ns=" + ns_set + "," + nsStr() + ","; 
 				
-			str += "name=" + nameStr(); 
+			str += "name=" +name + ","+ nameStr(); 
 			return str;
 		}
 		

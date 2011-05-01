@@ -24,7 +24,7 @@ package com.swfdiy.data.ABC
 		}
 		
 		public function fullNameStr():String {
-			return nsStr() + "::" + nameStr();
+			return "Q-" + nsStr() + "::" + nameStr();
 		}
 		
 		

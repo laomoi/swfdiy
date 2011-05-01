@@ -118,7 +118,8 @@ package com.swfdiy.data.ABC
 					
 					case Constant.CONSTANT_Multiname:
 					case Constant.CONSTANT_MultinameA:
-						multinames[i] = new Multiname(kind, new MMultiname(stream.read_u32(), stream.read_u32()));					
+						var tempname :int = stream.read_u32();
+						multinames[i] = new Multiname(kind, new MMultiname(stream.read_u32(), tempname));					
 						break;
 					
 					case Constant.CONSTANT_MultinameL:
@@ -226,11 +227,13 @@ package com.swfdiy.data.ABC
 					case Constant.CONSTANT_MultinameA:
 						_newStream.write_u32(multinames[i].data.name);
 						_newStream.write_u32(multinames[i].data.ns_set);
+						
+						
 						break;
 					
 					case Constant.CONSTANT_MultinameL:
 					case Constant.CONSTANT_MultinameLA:
-						_newStream.write_u32(multinames[i].data.name);			
+						_newStream.write_u32(multinames[i].data.ns_set);			
 						break;
 					/*NOT MENTION IN AVM2, COPRY FROM adbdump.as*/
 					case Constant.CONSTANT_NameL:
