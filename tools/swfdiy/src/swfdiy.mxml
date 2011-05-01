@@ -209,26 +209,98 @@
 				if (files.length < 2) {
 					return;
 				}
-				var _abc1:ABC = new ABC();
-				_abc1.data = new ABCStream(datas[0]);
 				
 				var i:int;
-				var abc_else_list:Array = [];
-				for (i=1;i<datas.length;i++) {
-					var _abc2:ABC = new ABC();
-					_abc2.data = new ABCStream(datas[i]);
-					abc_else_list.push(_abc2);
+				var j:int;
+				var abc_list:Array = [];
+				var classMap:Object = {};
+				var superClassList:Object  = [];
+				var beDecpendencied:Array = [];
+				var dependencied:Array = [];
+				for (i=0;i<datas.length;i++) {
+					var _abc:ABC = new ABC();
+					_abc.data = new ABCStream(datas[i]);
+					abc_list.push(_abc);
+					
+					superClassList[i] = [];
+					beDecpendencied[i] = [];
+					dependencied[i] = 0;
+					for (j=0;j<_abc.instances.length;j++) {
+						superClassList[i].push(_abc.instances[j].superNameStr());
+						classMap[_abc.instances[j].nameStr()] = i;
+						trace(_abc.instances[j].nameStr() + "," + _abc.instances[j].superNameStr() );
+					}
+				}
+				
+				//figour out the classes defined in the abc file and the class dependecy
+				//then sort the abc_list 
+				var k:int;
+				var s:int;
+				for (i=0;i<datas.length;i++) {
+					for (j=0;j<superClassList[i].length;j++) {
+						var want_super:String = superClassList[i][j];
+						if (classMap[want_super] == null) {
+							continue;
+						}
+						var superAt:int = classMap[want_super];
+						
+						beDecpendencied[superAt].push(i);
+						dependencied[i]++;
+					}
+				}
+				//topology  sort
+				var sortResult:Array = [];
+				while(1) {
+					var len:int = sortResult.length;
+					for (i=0;i<dependencied.length;i++) {
+						if (dependencied[i] == -1) {
+							continue;
+						}
+						if (dependencied[i] == 0) {
+							sortResult.push(i);
+							for (j=0;j<beDecpendencied[i].length;j++) {
+								dependencied[ beDecpendencied[i][j] ]--;
+							}
+							dependencied[i] = -1;
+						}
+					}
+					if (len == sortResult.length) {
+						break;
+					}
+				}
+				
+				if (sortResult.length < datas.length) {
+					txt.appendText("there are some cycle-class-dependency in the ABC file");
+					sortResult = [];
+					for (i=0;i<datas.length;i++) {
+						sortResult[i] = i;
+					}
+				}
+				
+				/*debug
+				if (files[sortResult[0]] == '1_class2.abc') {
+					sortResult[0] = 1;
+					sortResult[1] = 0;
+				}*/
+				
+				for (i=0;i<sortResult.length;i++) {
+					var n:int = sortResult[i];
+					trace(files[n]);
 				}
 				
 				
+				
+				
+				
 				//start merge
-				
+				var _abc1:ABC = abc_list[sortResult[0]];
 				//insert constantpool , don't fix the duplicated string or numbers
-				var map:IndexMap = new IndexMap;
 				
-				for (i=0;i<abc_else_list.length;i++) {
-					_abc1.merge(abc_else_list[i], map);
-					abc_else_list[i].updateIndex(map);
+				for (i=1;i<sortResult.length;i++) {
+					var n:int = sortResult[i];
+					var map:IndexMap = new IndexMap;
+					_abc1.merge(abc_list[n], map);
+					abc_list[n].updateIndex(map);
 				}
 				
 				
@@ -238,13 +310,13 @@
 				//save _abc1
 				
 				var sb:ByteArray = new ByteArray;
-				var str:String = files[0] + '___merge.abc';
+				var str:String = 'a___merge.abc';
 				_abc1.dumpRawData(sb);
 				save_file(sb, str);
 				
 				sb = new ByteArray;
 				sb.writeUTFBytes(_abc1.dump());
-				str = files[0] + '___merge.txt';
+				str = 'a___merge.txt';
 				save_file(sb, str);
 				
 			}

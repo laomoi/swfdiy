@@ -12,7 +12,7 @@ package com.swfdiy.data.ABC
 		
 		
 		public function nameStr() :String {
-			return "RTQ-" +Global.STRING(name);
+			return Global.STRING(name);
 		}
 		
 		public function fullNameStr():String {

@@ -314,57 +314,89 @@ package com.swfdiy.data.ABC
 		}
 		
 		
-		
+		private function addConstant(type:String, old:int,map:IndexMap):void {
+			var n:int;
+			if (type == "int") {
+				if (int_count == 0) {
+					int_count++;
+				} 
+				n = int_count++;
+			} else if (type == "uint") {
+				if (uint_count == 0) {
+					uint_count++;
+				}
+				n = uint_count++;
+			}else if (type == "double") {
+				if (double_count == 0) {
+					double_count++;
+				}
+				n = double_count++;
+			}else if (type == "string") {
+				if (string_count == 0) {
+					string_count++;
+				}
+				n = string_count++;
+			}else if (type == "namespace") {
+				if (namespace_count == 0) {
+					namespace_count++;
+				}
+				n = namespace_count++;
+			}else if (type == "multiname") {
+				if (multiname_count == 0) {
+					multiname_count++;
+				}
+				n = multiname_count++;
+			}else if (type == "ns_set") {
+				if (ns_set_count == 0) {
+					ns_set_count++;
+				}
+				n = ns_set_count++;
+			}
+			map.add(type, old, n);
+		}
 		public function merge(pool:ConstantPool, map:IndexMap):void {
 			
 			var i:int;
 			var j:int;
 			
 			for (i=1;i<pool.int_count;i++) {
-				map.add("int", i, ints.length);
+				addConstant("int", i ,map );
 				ints.push(pool.ints[i]);
-				int_count++;
 			}
 			
 			for (i=1;i<pool.uint_count;i++) {
-				map.add("unit", i, uints.length);
+				addConstant("uint", i ,map);
 				uints.push(pool.uints[i]);
-				uint_count++;
 			}
 			
 			for (i=1;i<pool.double_count;i++) {
-				map.add("double", i, doubles.length);
+				addConstant("double", i,map );
 				doubles.push(pool.doubles[i]);
-				double_count++;
 			}
 			
 			for (i=1;i<pool.string_count;i++) {
-				map.add("string", i, strings.length);
+				addConstant("string", i ,map);
 				strings.push(pool.strings[i]);
-				string_count++;
 			}
 			
 			for (i=1;i<pool.namespace_count;i++) {
-				map.add("namespace", i, namespaces.length);
+				addConstant("namespace", i ,map);
 				
 				//update namespace inner index
 				pool.namespaces[i].updateIndex(map);
 				namespaces.push(pool.namespaces[i]);
-				namespace_count++;
 			}
 			
 			for (i=1;i<pool.ns_set_count;i++) {
-				map.add("ns_set", i, ns_sets.length);
+				addConstant("ns_set", i ,map);
 				pool.ns_sets[i].updateIndex(map);
 				ns_sets.push(pool.ns_sets[i]);
-				ns_set_count++;
 			}
 			
 			for (i=1;i<pool.multiname_count;i++) {
-				map.add("multiname", i, multinames.length);
+				addConstant("multiname", i,map );
 				pool.multinames[i].updateIndex(map);
 				multinames.push(pool.multinames[i]);
-				multiname_count++;
 			}
 			
 			

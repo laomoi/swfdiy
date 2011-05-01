@@ -17,7 +17,7 @@ package com.swfdiy.data.ABC
 		}
 		
 		public function nameStr() :String {
-			return "MT-" + Global.STRING(name);
+			return  Global.STRING(name);
 		}
 		
 		public function dump(pre:String = "", indent:String="    ") :String {	

@@ -27,7 +27,7 @@ package com.swfdiy.data.ABC
 		}
 		
 		public function fullNameStr():String {
-			return "MM-" + nsStr() + "::" + nameStr();
+			return  nsStr() + "::" + nameStr();
 		}
 		
 

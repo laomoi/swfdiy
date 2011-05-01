@@ -49,6 +49,10 @@ package com.swfdiy.data.ABC
 			return Global.MULTINAME(name);
 		}
 		
+		public function superNameStr():String {
+			return Global.MULTINAME(super_name);
+		}
+		
 		public function dumpRawData(_newStream:ABCStream):void {
 			_newStream.write_u32(name);
 			_newStream.write_u32(super_name);

@@ -126,7 +126,7 @@ package com.swfdiy.data.ABC
 					_newStream.write_u32(data.slot_id);
 					_newStream.write_u32(data.type_name);
 					_newStream.write_u32(data.vindex);
-					if (u3) {
+					if (data.vindex) {
 						_newStream.write_u8(data.vkind);
 					}
 					break;						
@@ -179,13 +179,38 @@ package com.swfdiy.data.ABC
 		public function updateIndex(map:IndexMap):void {
 			name = map.multinamesMap[name];
 			var trait_attr:int = kind_byte >>4;
+			//kind = kind_byte & 0xf;
 			var i:int;
 			switch (kind) {
 				case Trait.Trait_Slot:
 				case Trait.Trait_Const:
 					//type name
 					data.type_name = map.multinamesMap[data.type_name];
-					
+					if (data.vindex) {
+						switch (data.vkind) {
+							case Constant.CONSTANT_Int:
+								data.vindex = map.intsMap[data.vindex];
+								break;
+							case Constant.CONSTANT_UInt:
+								data.vindex = map.uintsMap[data.vindex];
+								break;
+							case Constant.CONSTANT_Double:
+								data.vindex = map.doublesMap[data.vindex];
+								break;
+							case Constant.CONSTANT_Utf8:
+								data.vindex = map.stringsMap[data.vindex];
+								break;
+							case Constant.CONSTANT_Namespace:
+							case Constant.CONSTANT_PackageNamespace:
+							case Constant.CONSTANT_PackageInternalNs:
+							case Constant.CONSTANT_ProtectedNamespace:
+							case Constant.CONSTANT_ExplicitNamespace:
+							case Constant.CONSTANT_StaticProtectedNs:
+							case Constant.CONSTANT_PrivateNs:
+								data.vindex = map.namespaceMap[data.vindex];
+								break;
+						}
+					}
 					break;						
 				
 				case Trait.Trait_Class:

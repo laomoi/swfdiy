@@ -519,8 +519,15 @@ package com.swfdiy.data.ABC
 				exceptions[i].from = calculate_offset(op_len, 0, exceptions[i].op_index_from , true);
 				exceptions[i].to = calculate_offset(op_len, 0, exceptions[i].op_index_to , true);
 				exceptions[i].target = calculate_offset(op_len, 0, exceptions[i].op_index_target , true);
-				exceptions[i].exc_type = map.stringsMap[exceptions[i].exc_type];
-				exceptions[i].var_name = map.stringsMap[exceptions[i].var_name];
+				//!!!!fuck the avm2overview, it says that exc_type & var_name is from string pool
+				//but actually it is from multiplename pool
+				if (exceptions[i].exc_type) {
+					exceptions[i].exc_type = map.multinamesMap[exceptions[i].exc_type];
+				}
+				if (exceptions[i].var_name) {
+					exceptions[i].var_name = map.multinamesMap[exceptions[i].var_name];
+				}
+				
 			}
 			
 			
