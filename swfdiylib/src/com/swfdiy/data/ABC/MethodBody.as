@@ -451,6 +451,7 @@ package com.swfdiy.data.ABC
 			
 			method = map.methodsMap[method];
 		
+			
 			//_newStream.write_bytes(code);//this should be changed in future 
 			for (i=0;i<opcodes.length;i++) {
 				 op = opcodes[i][0];
@@ -459,11 +460,11 @@ package com.swfdiy.data.ABC
 				for (j =0;j<params.length;j++) {
 					var indexType:String = params[j].indexType;
 					if (indexType != "") {
-						//var ov:* = params[j].val;
+						var ov:* = params[j].val;
 						params[j].val = map.getMap(indexType)[params[j].val];
-						//if (ov != params[j].val) {
-						//	trace("?");
-						//}
+						if (ov != params[j].val) {
+							trace(ov + '->' + params[j].val);
+						}
 					}
 				}
 			}
@@ -493,10 +494,13 @@ package com.swfdiy.data.ABC
 				op_len[i] = tempStream.pos - p;
 			}
 			
+			
+			
 			var offset:int ;
 			for (i=0;i<opcodes.length;i++) {
 				op = opcodes[i][0];
 				params = opcodes[i][1];
+			
 				for (j=0;j<params.length;j++) {	
 					if (params[j].extra && params[j].extra['jump_to']) {
 						//so this is jump/switch op, hack it!

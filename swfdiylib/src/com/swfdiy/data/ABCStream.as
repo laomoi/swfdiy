@@ -91,10 +91,10 @@ package com.swfdiy.data
 		
 		public function write_s24(n:int):void
 		{
-			//1000 0000 0000 0000 0000 0000
 			_data.writeByte(n & 0x000000ff);
 			_data.writeByte((n & 0x0000ff00)>>8);
-			_data.writeByte(((n & 0x00ff0000)>>16) * (n <0 ? -1: 1) );
+			_data.writeByte((n & 0x00ff0000)>>16);
+			
 		}
 		
 		/*
