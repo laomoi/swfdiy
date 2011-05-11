@@ -142,5 +142,5 @@
 	<s:Button x="6" y="11" label="openSWF" click="onOpenSWF(event)" height="40" width="85"/>
 	<mx:Tree x="6" y="60" id="fileTree" width="327" height="281"  dataProvider="{scriptFiles}" 
 			 labelFunction="treeLabel" itemClick="onTreeClick(event)"></mx:Tree>
-	<s:TextArea x="341" y="10" width="369" height="578" id="scriptArea" fontFamily="Courier New"/>
+	<s:TextArea x="341" y="10" width="583" height="578" id="scriptArea" fontFamily="Courier New"/>
 </s:WindowedApplication>

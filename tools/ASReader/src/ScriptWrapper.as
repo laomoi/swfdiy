@@ -40,10 +40,26 @@ package
 			return _abc.constant_pool.multinames[index];
 		}
 		
+		private function __multiname_name(index:int):String {
+			var mm:Multiname = __multiname(index);
+			if (mm == null) {
+				return "*";
+			}
+			return __string(mm.data.name);
+		}
+		
 		private function __string(index:int):String {
 			return _abc.constant_pool.strings[index];
 		}
-		
+		private function __int(index:int):int {
+			return _abc.constant_pool.ints[index];
+		}
+		private function __uint(index:int):uint {
+			return _abc.constant_pool.uints[index];
+		}
+		private function __double(index:int):Number {
+			return _abc.constant_pool.doubles[index];
+		}
 		private function __namespace(index:int):MNamespace {
 			return _abc.constant_pool.namespaces[index];
 		}
@@ -90,18 +106,18 @@ package
 			var info:Array = [null, "", "", null, null]; // trait class, packag_name, class_name, qname, ns
 			for (i=0;i< _script.traits.length;i++) {
 				if ( _script.traits[i].kind == Trait.Trait_Class) {
+					//trait.name must be a QName
+					var qname:MQName = MQName(__multiname(_script.traits[i].name).data);
 					var tc:TraitClass = _script.traits[i].data;
 					var instance:InstanceInfo = _abc.instances[tc.classi];
-					if (__multiname(instance.name).data is MQName) {
-						var qname:MQName = MQName(__multiname(instance.name).data);
-						var ns:MNamespace = __namespace(qname.ns);
-						if (ns.kind == Constant.CONSTANT_PackageNamespace) {
-							var package_name:String = __string(ns.name);
-							var class_name:String = __string(qname.name);
-							info = [tc, package_name, class_name, qname, ns];
-							return info;
-						}
+					var ns:MNamespace = __namespace(qname.ns);
+					if (ns.kind == Constant.CONSTANT_PackageNamespace) {
+						var package_name:String = __string(ns.name);
+						var class_name:String = __string(qname.name);
+						info = [tc, package_name, class_name, qname, ns, _script.traits[i]];
+						return info;
 					}
+					
 				}
 			}
 			
@@ -192,19 +208,19 @@ package
 			var str:String = "";
 			switch (t.kind) {
 				case Trait.Trait_Class:
-					str = get_trait_class(t.data);
+					str = get_trait_class(t, t.data);
 					break;
 				case Trait.Trait_Slot:
-					str = get_trait_slot(t.data);
+					str = get_trait_slot(t, t.data);
 					break;
 			}
 			return str;
 		}
 		
-		private function get_trait_class(tc:TraitClass):String {
+		private function get_trait_class(t:Trait, tc:TraitClass):String {
 			var instance:InstanceInfo = _abc.instances[tc.classi];
 			//instance.name must be a QNAME
-			var qname:MQName = MQName(__multiname(instance.name).data);
+			var qname:MQName = MQName(__multiname(t.name).data);
 			var ns:MNamespace = __namespace(qname.ns);
 			var package_name:String = __string(ns.name);
 			var class_name:String = __string(qname.name);
@@ -258,15 +274,66 @@ package
 			return def;
 		}
 		
-		private function get_trait_slot(ts:TraitSlot):String {
+		private function get_trait_slot(t:Trait, ts:TraitSlot, isClassTrait:Boolean=false):String {
 			/*
 			 public/internal/private/protected static var/const xxx:XXX = xxxx
 			*/
-			var def:String = "";
-			//switch (ts.
+			var qname:MQName = MQName(__multiname(t.name).data);
+			var ns:MNamespace = __namespace(qname.ns);
+			var def:String =  __namespaceStr(ns) + " ";
+			if (isClassTrait) {
+				def += "static ";
+			}
+			
+			if (t.kind == Trait.Trait_Const) {
+				def += "const ";
+			} else {
+				def += "var ";
+			}
+			var slot_name:String = __string(qname.name);
+			def += slot_name + " : " + __multiname_name(ts.type_name);
+			_addImport(__multiname(ts.type_name));
+			
+			if (ts.vindex) {
+				var val:*;
+				switch (ts.vkind) {
+					case Constant.CONSTANT_Int:
+						val = __int(ts.vindex);
+						break;
+					case Constant.CONSTANT_UInt:
+						val = __uint(ts.vindex);
+						break;
+					case Constant.CONSTANT_Double:
+						val = __double(ts.vindex);
+						break;
+					case Constant.CONSTANT_Utf8:
+						val =  _quoteString(__string(ts.vindex));
+						break;
+					case Constant.CONSTANT_Namespace:
+					case Constant.CONSTANT_PackageNamespace:
+					case Constant.CONSTANT_PackageInternalNs:
+					case Constant.CONSTANT_ProtectedNamespace:
+					case Constant.CONSTANT_ExplicitNamespace:
+					case Constant.CONSTANT_StaticProtectedNs:
+					case Constant.CONSTANT_PrivateNs:
+						val =  __namespaceStr(ns);
+						break;
+					case Constant.CONSTANT_False:
+						val = "false";
+						break;
+					case Constant.CONSTANT_True:
+						val = "true";
+						break;
+				}
+				def += " = " + val;
+			}
+			
+			
 			return def;
 		}
-		
+		private function _quoteString(str:String ):String {
+			return '"' + str + '"';
+		}
 		private function _addImportPackage(package_name:String, class_name:String):void {
 			if (package_name == "") {
 				return;
@@ -283,6 +350,10 @@ package
 			_imports[full_name]= true;
 		}
 		private function _addImport(mname:Multiname):void {
+			if (mname == null) {
+				//must be index = 0
+				return;
+			}
 			var class_name:String = __string(mname.data.name);
 			
 			var ns:MNamespace;
@@ -311,9 +382,10 @@ package
 		private function getClassStringInfo():Object {
 			//Global.abc = _abc;
 			var obj:Object = {};
+			var t:Trait = Trait(firstClassInfo[5]);
 			var tc:TraitClass = TraitClass(firstClassInfo[0]);
 				
-			obj['classStr'] = get_trait_class(tc);
+			obj['classStr'] = get_trait_class(t, tc);
 			
 			return obj;
 		}
