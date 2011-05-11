@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties mainApplicationPath="swfdiy.mxml" projectUUID="4af623ab-c1e5-490d-9a34-fbfe67dafc3f" version="6">
+<actionScriptProperties mainApplicationPath="ASReader.mxml" projectUUID="09dde518-abea-44b6-8fe2-6ff901df88fa" version="6">
   <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
-      <compilerSourcePathEntry kind="1" linkType="1" path="c:/mywork/swfdiy/swfdiylib/src"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="C:/mywork/swfdiy/swfdiylib/src"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path="">
@@ -15,7 +15,7 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="swfdiy.mxml">
+    <application path="ASReader.mxml">
       <airExcludes/>
     </application>
   </applications>

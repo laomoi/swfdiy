@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexLibProperties includeAllClasses="true" version="3">
-  <includeClasses/>
+<flexLibProperties includeAllClasses="false" version="3">
+  <includeClasses>
+    <classEntry path="com.swfdiy.data.ABC.ClassInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.Constant"/>
+    <classEntry path="com.swfdiy.data.ABC.ConstantPool"/>
+    <classEntry path="com.swfdiy.data.ABC.ExceptionInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.Global"/>
+    <classEntry path="com.swfdiy.data.ABC.InstanceInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.ItemInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.MMultiname"/>
+    <classEntry path="com.swfdiy.data.ABC.MNamespace"/>
+    <classEntry path="com.swfdiy.data.ABC.MQName"/>
+    <classEntry path="com.swfdiy.data.ABC.MTypeName"/>
+    <classEntry path="com.swfdiy.data.ABC.MetadataInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.MethodBody"/>
+    <classEntry path="com.swfdiy.data.ABC.MethodInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.Multiname"/>
+    <classEntry path="com.swfdiy.data.ABC.NamespaceSet"/>
+    <classEntry path="com.swfdiy.data.ABC.OptionDetail"/>
+    <classEntry path="com.swfdiy.data.ABC.OptionInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.RTQName"/>
+    <classEntry path="com.swfdiy.data.ABC.ScriptInfo"/>
+    <classEntry path="com.swfdiy.data.ABC.Trait"/>
+    <classEntry path="com.swfdiy.data.ABC.TraitClass"/>
+    <classEntry path="com.swfdiy.data.ABC.TraitFunction"/>
+    <classEntry path="com.swfdiy.data.ABC.TraitMethod"/>
+    <classEntry path="com.swfdiy.data.ABC.TraitSlot"/>
+    <classEntry path="com.swfdiy.data.ABC"/>
+    <classEntry path="com.swfdiy.data.ABCStream"/>
+    <classEntry path="com.swfdiy.data.Opcode"/>
+    <classEntry path="com.swfdiy.data.SWF"/>
+    <classEntry path="com.swfdiy.data.SWFStream"/>
+    <classEntry path="com.swfdiy.data.SWFTag.TagDoABC"/>
+    <classEntry path="com.swfdiy.data.SWFTag.TagSymbolClass"/>
+    <classEntry path="com.swfdiy.data.SWFTag.TagUnknown"/>
+    <classEntry path="com.swfdiy.data.SWFTag"/>
+    <classEntry path="com.swfdiy.data.helper.IndexMap"/>
+  </includeClasses>
   <includeResources/>
   <namespaceManifests/>
 </flexLibProperties>
