@@ -27,7 +27,7 @@ package com.swfdiy.data.ABC
 		}
 		
 		public static function MULTINAME(index:int):String {
-			return (index && Global.abc.constant_pool.multinames[index]) ?  Global.abc.constant_pool.multinames[index].fullNameStr():"*";	
+			return "mindex=" + index + "," + ((index && Global.abc.constant_pool.multinames[index]) ?  Global.abc.constant_pool.multinames[index].fullNameStr():"*");	
 		}
 		
 		public static function CLASS(index:int):ClassInfo {

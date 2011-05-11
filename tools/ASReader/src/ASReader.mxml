@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" width="934" height="597" creationComplete="onInit(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.SWF;
+			import com.swfdiy.data.SWFTag;
+			import com.swfdiy.data.SWFTag.TagDoABC;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
+			
+			[Bindable]
+			[Embed(source="icon.jpg")] 
+			public var iconSymbol1:Class; 
+			
+			[Bindable]
+			private var scriptFiles:Object ;
+			
+			private var swf:SWF;
+			private var abcs:Array;
+			private var scripts:Array;
+			
+			private function onInit(e:Event):void {
+				//scriptFiles = new ArrayCollection();
+				//var b:ArrayCollection =  new ArrayCollection();
+				//scriptFiles.addItem({label:"wori", children:[{label:"hei"}]});
+				//scriptFiles.addItem({label:"wori2"});
+				//scriptFiles.addItem(b);
+			}
+			
+			protected function onOpenSWF(event:MouseEvent):void
+			{
+					var allFilter:FileFilter = new FileFilter("swf (*.swf)", "*.swf");
+					
+					Utils.openAndReadFile(_onClickOpen, allFilter);
+			}	
+				
+			private function _onClickOpen(data:Array, files:Array):void {			
+				swf = new SWF(data[0]);
+				abcs = [];
+				scripts = [];
+				swf.startReadTags();	
+				
+				while(1) {
+					var start_pos:int = swf.pos;
+					var tag:SWFTag = swf.read_tag() ;
+					
+					if (tag == null) {
+						break;
+					}
+					
+
+					if (tag is TagDoABC) {
+						var tagDoABC:TagDoABC =  tag as TagDoABC;
+						
+						abcs.push(new ABCWrapper(tagDoABC.abc()));						
+					}
+				}
+				
+				var i:int;
+				var j:int;
+				
+				scriptFiles = {children:[], label: files[0]};
+		
+				
+				for (i=0;i<abcs.length;i++) {
+					var abc:ABCWrapper = abcs[i];
+					
+					for (j=0;j<abc.scripts.length;j++) {
+						var script:ScriptWrapper = abc.scripts[j];
+						var sn:Array = script.getScriptName();
+						if (sn.length <= 0) {
+							continue;
+						}
+						scripts.push(script);
+						addFile(sn, scripts.length-1);
+					}
+				}
+					
+			}
+			
+			
+			private function _getChild(name:String, element:Object):Object {
+				var i:int;
+				var list:Array = element.children;
+				for (i=0;i<list.length;i++) {
+					if (list[i].label == name) {
+						return list[i];
+					}
+				}
+				return null;
+			}
+			private function addFile(names:Array, scriptIndex:int):void {
+				var i:int; 
+				var lastNode:Object = scriptFiles;
+				
+			
+				for (i=0;i<names.length;i++) {
+					var n:String = names[i];
+					if (i != names.length -1) {
+						var node:Object = _getChild(n, lastNode);
+						if (node) {
+							lastNode = node;
+						} else {
+							node = {children:[], label: n};
+							lastNode.children.push(node);
+							lastNode = node;
+						}
+					} else {
+						node = {label: n, scriptIndex:scriptIndex, icon:iconSymbol1};
+						lastNode.children.push(node);
+						
+					}
+					
+				}
+			}
+			private function onTreeClick(ev:ListEvent):void {
+				
+				var item:Object =ev.itemRenderer.data;
+				if (item.scriptIndex != null) {
+					// this is script
+					scripts[item.scriptIndex].parse();
+					var content:String= scripts[item.scriptIndex].content();
+					scriptArea.text = content;
+				}
+			}
+			
+			private function treeLabel(item:Object):String {
+				return item.label;
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button x="6" y="11" label="openSWF" click="onOpenSWF(event)" height="40" width="85"/>
+	<mx:Tree x="6" y="60" id="fileTree" width="327" height="281"  dataProvider="{scriptFiles}" 
+			 labelFunction="treeLabel" itemClick="onTreeClick(event)"></mx:Tree>
+	<s:TextArea x="341" y="10" width="369" height="578" id="scriptArea" fontFamily="Courier New"/>
+</s:WindowedApplication>

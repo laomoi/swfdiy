@@ -28,6 +28,8 @@ package com.swfdiy.data.ABC
 			return strList;
 		}
 		
+	
+		
 		public function dumpRawData(_newStream:ABCStream):void {
 			_newStream.write_u32(count);
 			var j:int;

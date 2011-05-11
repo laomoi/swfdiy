@@ -34,7 +34,7 @@ package com.swfdiy.data.ABC
 		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
-			str += pre + "ns=" + ns_set + "," + nsStr() + ","; 
+			str += pre + "MM,ns=" + ns_set + "," + nsStr() + ","; 
 				
 			str += "name=" +name + ","+ nameStr(); 
 			return str;

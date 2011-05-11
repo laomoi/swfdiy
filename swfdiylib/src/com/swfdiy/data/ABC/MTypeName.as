@@ -22,7 +22,7 @@ package com.swfdiy.data.ABC
 		
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
-			str += pre + ",name=" + nameStr(); 
+			str += pre + "MT,name=" + nameStr(); 
 			return str;
 		}
 		

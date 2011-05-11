@@ -31,7 +31,7 @@ package com.swfdiy.data.ABC
 	
 		public function dump(pre:String = "", indent:String="    ") :String {	
 			var str:String = "";
-			str += pre + "ns=" + nsStr()+ ",name=" + nameStr(); 
+			str += pre + "Q,ns=" + nsStr()+ ",name=" + name; 
 			return str;
 		}
 		
