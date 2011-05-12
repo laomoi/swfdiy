@@ -89,7 +89,8 @@ package
 					nsStr = "public";
 					break;
 				case Constant.CONSTANT_PackageInternalNs:
-					nsStr = "internal";
+					//nsStr = "internal";
+					nsStr = "";
 					break;
 				case Constant.CONSTANT_ProtectedNamespace:
 					nsStr = "protected";
@@ -104,8 +105,7 @@ package
 					nsStr = "private";
 					break;
 			}
-			
-			
+		
 			
 			return nsStr;
 		}
@@ -190,8 +190,8 @@ package
 		}
 		
 		
-		private function _print(str:String, tab:String=""):void{
-			_content += tab + str + "\n";
+		private function _print(str:String, tab:String=""):String{
+			return tab + str + "\n";
 		}
 		public function parse(force:Boolean = false):void {
 			if (!force && _content != "") {
@@ -221,36 +221,76 @@ package
 			var instance:InstanceInfo =  _abc.instances[tc.classi];
 			var classInfo:ClassInfo =  _abc.classes[tc.classi];
 			var i:int;
-			_print("package " + package_name + ' {');
+			var j:int;
+			_content +=_print("package " + package_name + ' {');
 			
-			//import	
-			for (var k:String in _imports) {
-				_print("import " + k + ";", tab);
-			}
+			
+			var classBlockStr:String = "";
 			
 			//class name
-			_print(classStringInfo['classStr'] + ' {', tab);
+			classBlockStr += _print(classStringInfo['classStr'] + ' {', tab);
 			
 			
 			var t:Trait ;
 			var info:String;
+			var method_body_str:Array;
 			//instance traits
 			for (i=0;i<instance.traits.length;i++) {
 				t = Trait(instance.traits[i]);
 				info = _get_trait(t);
-				_print(info+";", tab + tab_string);
+				classBlockStr += _print(info, tab + tab_string);
+				
+				if (t.kind == Trait.Trait_Getter || 
+					t.kind == Trait.Trait_Setter ||
+					t.kind == Trait.Trait_Method) {
+					method_body_str = _get_method_body(__method(t.data.method));
+					classBlockStr += _print("{", tab + tab_string);
+					for (j=0;j<method_body_str.length;j++) {
+						classBlockStr += _print(method_body_str[j], tab + tab_string + tab_string);
+					}
+					classBlockStr += _print("}", tab + tab_string);
+				}
 			}
 			
 			//class traits
 			for (i=0;i<classInfo.traits.length;i++) {
 				t = Trait(classInfo.traits[i]);
 				info = _get_trait(t, true);
-				_print(info+";", tab + tab_string);
+				classBlockStr += _print(info, tab + tab_string);
+				if (t.kind == Trait.Trait_Getter || 
+					t.kind == Trait.Trait_Setter ||
+					t.kind == Trait.Trait_Method) {
+					method_body_str = _get_method_body(__method(t.data.method));
+					classBlockStr += _print("{", tab + tab_string);
+					for (j=0;j<method_body_str.length;j++) {
+						classBlockStr += _print(method_body_str[j], tab + tab_string + tab_string);
+					}
+					classBlockStr += _print("}", tab + tab_string);
+				}
+			}
+			
+			//import	
+			for (var k:String in _imports) {
+				_content += _print("import " + k + ";", tab);
+			}
+			_content += classBlockStr;
+			
+			//instance construct
+			if (instance.iint) {
+				_content += _print(_get_class_construct(__method(instance.iint)), tab + tab_string);
+				method_body_str = _get_method_body(__method(instance.iint));
+				_content += _print("{", tab + tab_string);
+				for (j=0;j<method_body_str.length;j++) {
+					_content += _print(method_body_str[j], tab + tab_string + tab_string);
+				}
+				_content += _print("}", tab + tab_string);
+			
 			}
 			
 			
-			_print('}', tab);
-			_print("}//package");
+			
+			_content += _print('}', tab);
+			_content += _print("}//package");
 		}
 		
 		private function _get_trait(t:Trait, isClassTrait:Boolean=false):String {
@@ -365,7 +405,7 @@ package
 			}
 			
 			
-			return def;
+			return def + ";";
 		}
 		
 		private function _get_trait_method(t:Trait, tm:TraitMethod, isClassTrait:Boolean=false):String {
@@ -402,7 +442,14 @@ package
 			def += slot_name;
 			
 			var method:MethodInfo = __method(tm.method);
-			//params
+			
+			def += _get_method_param_part(method);
+			
+			def += " : " + __multiname_name(method.return_type);
+			
+			return def;			
+		}
+		private function _get_method_param_part(method:MethodInfo):String {
 			var params:Array = [];
 			var i:int;
 			var param:String = "";
@@ -425,11 +472,18 @@ package
 				params.push(param);
 			}
 			
-			def += '(' + params.join(", ") + ')';
+			return '(' + params.join(", ") + ')';
+		}
+		private function _get_class_construct(method_info:MethodInfo):String {
+			var def:String = "public function ";
+			def += firstClassInfo[2];
+			def += _get_method_param_part(method_info);
+			return def;
+		}
+		private function _get_method_body(method:MethodInfo):Array {
+			var list:Array = [];
 			
-			def += " : " + __multiname_name(method.return_type);
-			
-			return def;			
+			return list;
 		}
 		private function _quoteString(str:String ):String {
 			return '"' + str + '"';
