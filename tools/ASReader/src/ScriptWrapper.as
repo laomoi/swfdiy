@@ -1,18 +1,22 @@
 package
 {
 	import com.swfdiy.data.ABC;
+	import com.swfdiy.data.ABC.ClassInfo;
 	import com.swfdiy.data.ABC.Constant;
 	import com.swfdiy.data.ABC.InstanceInfo;
 	import com.swfdiy.data.ABC.MMultiname;
 	import com.swfdiy.data.ABC.MNamespace;
 	import com.swfdiy.data.ABC.MQName;
 	import com.swfdiy.data.ABC.MTypeName;
+	import com.swfdiy.data.ABC.MethodBody;
+	import com.swfdiy.data.ABC.MethodInfo;
 	import com.swfdiy.data.ABC.Multiname;
 	import com.swfdiy.data.ABC.NamespaceSet;
 	import com.swfdiy.data.ABC.RTQName;
 	import com.swfdiy.data.ABC.ScriptInfo;
 	import com.swfdiy.data.ABC.Trait;
 	import com.swfdiy.data.ABC.TraitClass;
+	import com.swfdiy.data.ABC.TraitMethod;
 	import com.swfdiy.data.ABC.TraitSlot;
 
 	public class ScriptWrapper
@@ -67,6 +71,12 @@ package
 		private function __nsset(index:int):NamespaceSet {
 			return _abc.constant_pool.ns_sets[index];
 		}
+		private function __method(index:int):MethodInfo {
+			return _abc.methods[index];
+		}
+		private function __method_body(index:int):MethodBody {
+			return _abc.method_bodys[index];
+		}
 		private function __namespaceStr(ns:MNamespace):String {
 		
 			var nsStr:String = "";
@@ -98,6 +108,40 @@ package
 			
 			
 			return nsStr;
+		}
+		
+		private function __val(vkind:int,vindex:int ):String {
+			var val:*;
+			switch (vkind) {
+				case Constant.CONSTANT_Int:
+					val = __int(vindex);
+					break;
+				case Constant.CONSTANT_UInt:
+					val = __uint(vindex);
+					break;
+				case Constant.CONSTANT_Double:
+					val = __double(vindex);
+					break;
+				case Constant.CONSTANT_Utf8:
+					val =  _quoteString(__string(vindex));
+					break;
+				case Constant.CONSTANT_Namespace:
+				case Constant.CONSTANT_PackageNamespace:
+				case Constant.CONSTANT_PackageInternalNs:
+				case Constant.CONSTANT_ProtectedNamespace:
+				case Constant.CONSTANT_ExplicitNamespace:
+				case Constant.CONSTANT_StaticProtectedNs:
+				case Constant.CONSTANT_PrivateNs:
+					val =  __namespaceStr(__namespace(vindex));
+					break;
+				case Constant.CONSTANT_False:
+					val = "false";
+					break;
+				case Constant.CONSTANT_True:
+					val = "true";
+					break;
+			}
+			return val;
 		}
 		
 		//find the first trait class(public) in the script
@@ -169,13 +213,13 @@ package
 		
 		private function _print_package(tab:String):void {
 			//Global.abc = _abc;
-			var classInfo:Object = getClassStringInfo();
+			var classStringInfo:Object = getClassStringInfo();
 			var package_name:String = String(firstClassInfo[1]);
 			var tc:TraitClass = TraitClass(firstClassInfo[0]);
 			//var qname:MQName = MQName(firstClassInfo[3]);
 			// ns:MNamespace = MNamespace(firstClassInfo[4]);
 			var instance:InstanceInfo =  _abc.instances[tc.classi];
-			
+			var classInfo:ClassInfo =  _abc.classes[tc.classi];
 			var i:int;
 			_print("package " + package_name + ' {');
 			
@@ -185,39 +229,55 @@ package
 			}
 			
 			//class name
-			_print(classInfo['classStr'] + ' {', tab);
+			_print(classStringInfo['classStr'] + ' {', tab);
 			
+			
+			var t:Trait ;
+			var info:String;
 			//instance traits
 			for (i=0;i<instance.traits.length;i++) {
-				var t:Trait = Trait(instance.traits[i]);
-				var info:String = _get_trait(t);
+				t = Trait(instance.traits[i]);
+				info = _get_trait(t);
 				_print(info+";", tab + tab_string);
-				//_print_trait(t, tab + tab_string);
 			}
 			
-			
+			//class traits
+			for (i=0;i<classInfo.traits.length;i++) {
+				t = Trait(classInfo.traits[i]);
+				info = _get_trait(t, true);
+				_print(info+";", tab + tab_string);
+			}
 			
 			
 			_print('}', tab);
 			_print("}//package");
 		}
 		
-		private function _get_trait(t:Trait):String {
+		private function _get_trait(t:Trait, isClassTrait:Boolean=false):String {
 			//slot, method, getter, setter, class, function, const
 			//private/public/protected/internal static var xxx:type
 			var str:String = "";
 			switch (t.kind) {
 				case Trait.Trait_Class:
-					str = get_trait_class(t, t.data);
+					str = _get_trait_class(t, t.data, isClassTrait);
 					break;
 				case Trait.Trait_Slot:
-					str = get_trait_slot(t, t.data);
+				case Trait.Trait_Const:
+					str = _get_trait_slot(t, t.data, isClassTrait);
+					break;
+				case Trait.Trait_Function:
+					str = "FUNCTION--TBD";
+					break;
+				case Trait.Trait_Getter:
+				case Trait.Trait_Setter:
+				case Trait.Trait_Method:
+					str = _get_trait_method(t, t.data, isClassTrait);
 					break;
 			}
 			return str;
 		}
 		
-		private function get_trait_class(t:Trait, tc:TraitClass):String {
+		private function _get_trait_class(t:Trait, tc:TraitClass, isClassTrait:Boolean = false):String {
 			var instance:InstanceInfo = _abc.instances[tc.classi];
 			//instance.name must be a QNAME
 			var qname:MQName = MQName(__multiname(t.name).data);
@@ -242,6 +302,10 @@ package
 			}
 			
 			def += __namespaceStr(ns) + " ";
+			
+			//if (isClassTrait) {
+			//	def += "static ";
+			//}
 			
 			if (instance.flags & Constant.CONSTANT_ClassInterface) {
 				def += "interface"
@@ -274,7 +338,7 @@ package
 			return def;
 		}
 		
-		private function get_trait_slot(t:Trait, ts:TraitSlot, isClassTrait:Boolean=false):String {
+		private function _get_trait_slot(t:Trait, ts:TraitSlot, isClassTrait:Boolean=false):String {
 			/*
 			 public/internal/private/protected static var/const xxx:XXX = xxxx
 			*/
@@ -291,45 +355,81 @@ package
 				def += "var ";
 			}
 			var slot_name:String = __string(qname.name);
-			def += slot_name + " : " + __multiname_name(ts.type_name);
+			def += slot_name + ":" + __multiname_name(ts.type_name);
 			_addImport(__multiname(ts.type_name));
 			
 			if (ts.vindex) {
-				var val:*;
-				switch (ts.vkind) {
-					case Constant.CONSTANT_Int:
-						val = __int(ts.vindex);
-						break;
-					case Constant.CONSTANT_UInt:
-						val = __uint(ts.vindex);
-						break;
-					case Constant.CONSTANT_Double:
-						val = __double(ts.vindex);
-						break;
-					case Constant.CONSTANT_Utf8:
-						val =  _quoteString(__string(ts.vindex));
-						break;
-					case Constant.CONSTANT_Namespace:
-					case Constant.CONSTANT_PackageNamespace:
-					case Constant.CONSTANT_PackageInternalNs:
-					case Constant.CONSTANT_ProtectedNamespace:
-					case Constant.CONSTANT_ExplicitNamespace:
-					case Constant.CONSTANT_StaticProtectedNs:
-					case Constant.CONSTANT_PrivateNs:
-						val =  __namespaceStr(ns);
-						break;
-					case Constant.CONSTANT_False:
-						val = "false";
-						break;
-					case Constant.CONSTANT_True:
-						val = "true";
-						break;
-				}
+				var val:* = __val(ts.vkind, ts.vindex);
+				
 				def += " = " + val;
 			}
 			
 			
 			return def;
+		}
+		
+		private function _get_trait_method(t:Trait, tm:TraitMethod, isClassTrait:Boolean=false):String {
+			/*
+				final/override public/private/..  static function xxxx(xx:xx=??, xx:xx=??, xxxx=??):YYYY 
+			*/
+			
+			var qname:MQName = MQName(__multiname(t.name).data);
+			var ns:MNamespace = __namespace(qname.ns);
+			var def:String = "";
+			var trait_attr:int = t.kind_byte >>4;
+			if (trait_attr & Trait.ATTR_Final) {
+				def += "final ";
+			}
+			if (trait_attr & Trait.ATTR_Override) {
+				def += "override ";
+			}
+			def +=  __namespaceStr(ns) + " ";
+			
+			
+			if (isClassTrait) {
+				def += "static ";
+			}
+			
+			if (t.kind == Trait.Trait_Getter) {
+				def += "get ";
+			} else if (t.kind == Trait.Trait_Setter) {
+				def += "set ";
+			}
+			
+			def += "function ";
+			
+			var slot_name:String = __string(qname.name);
+			def += slot_name;
+			
+			var method:MethodInfo = __method(tm.method);
+			//params
+			var params:Array = [];
+			var i:int;
+			var param:String = "";
+			var options:Array =[];
+			if (method.option_count) {
+				options = method.option_info.option_details;
+			}
+			
+			for (i=0;i<method.param_count;i++) {
+				param = "";
+				if (method.param_names.length) {
+					param += __multiname_name(method.param_names[i]);	
+				}
+				
+				param += ":" + __multiname_name(method.param_type[i]);
+				if (options.length && options[i] != null) {
+					var val:* = __val(options[i].kind, options[i].val);
+					param += "=" + val;
+				}
+				params.push(param);
+			}
+			
+			def += '(' + params.join(", ") + ')';
+			
+			def += " : " + __multiname_name(method.return_type);
+			
+			return def;			
 		}
 		private function _quoteString(str:String ):String {
 			return '"' + str + '"';
@@ -385,7 +485,7 @@ package
 			var t:Trait = Trait(firstClassInfo[5]);
 			var tc:TraitClass = TraitClass(firstClassInfo[0]);
 				
-			obj['classStr'] = get_trait_class(t, tc);
+			obj['classStr'] = _get_trait_class(t, tc);
 			
 			return obj;
 		}
