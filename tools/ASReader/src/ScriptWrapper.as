@@ -18,6 +18,7 @@ package
 	import com.swfdiy.data.ABC.TraitClass;
 	import com.swfdiy.data.ABC.TraitMethod;
 	import com.swfdiy.data.ABC.TraitSlot;
+	import com.swfdiy.data.Opcode;
 
 	public class ScriptWrapper
 	{
@@ -243,7 +244,7 @@ package
 				if (t.kind == Trait.Trait_Getter || 
 					t.kind == Trait.Trait_Setter ||
 					t.kind == Trait.Trait_Method) {
-					method_body_str = _get_method_body(__method(t.data.method));
+					method_body_str = _get_method_body(t.data.method);
 					classBlockStr += _print("{", tab + tab_string);
 					for (j=0;j<method_body_str.length;j++) {
 						classBlockStr += _print(method_body_str[j], tab + tab_string + tab_string);
@@ -260,7 +261,7 @@ package
 				if (t.kind == Trait.Trait_Getter || 
 					t.kind == Trait.Trait_Setter ||
 					t.kind == Trait.Trait_Method) {
-					method_body_str = _get_method_body(__method(t.data.method));
+					method_body_str = _get_method_body(t.data.method);
 					classBlockStr += _print("{", tab + tab_string);
 					for (j=0;j<method_body_str.length;j++) {
 						classBlockStr += _print(method_body_str[j], tab + tab_string + tab_string);
@@ -278,7 +279,7 @@ package
 			//instance construct
 			if (instance.iint) {
 				_content += _print(_get_class_construct(__method(instance.iint)), tab + tab_string);
-				method_body_str = _get_method_body(__method(instance.iint));
+				method_body_str = _get_method_body(instance.iint);
 				_content += _print("{", tab + tab_string);
 				for (j=0;j<method_body_str.length;j++) {
 					_content += _print(method_body_str[j], tab + tab_string + tab_string);
@@ -461,7 +462,7 @@ package
 			for (i=0;i<method.param_count;i++) {
 				param = "";
 				if (method.param_names.length) {
-					param += __multiname_name(method.param_names[i]);	
+					param += __string(method.param_names[i]);	
 				}
 				
 				param += ":" + __multiname_name(method.param_type[i]);
@@ -480,10 +481,460 @@ package
 			def += _get_method_param_part(method_info);
 			return def;
 		}
-		private function _get_method_body(method:MethodInfo):Array {
+		private function _get_method_body(methodIndex:int):Array {
 			var list:Array = [];
+			var body:MethodBody =  __method_body(methodIndex);
+			//first 2 opcode should be 
+			//getlocal0         
+			//pushscope 
+			if (body.opcodes.length < 2) {
+				return list;
+			}
+			
+			
+			
+			var operator_stack:Array = [];
+			var locals:Array = [];
+			var scope_stack :Array = [];
+			
+			locals.push({type: "this", val :"this"});
+			
+			
+			
+			
+			var i:int;
+			var j:int;
+			var temp:*;
+			var temp2:*;
+			var mindex:int;
+			var mname:Multiname;
+			var mname_name:String;
+			var args:Array;
+			var obj:*;
+			var str:String;
+			
+			for (i=1;i < body.local_count;i++) {
+				list.push("var _loc" + i +":*;");
+				locals[i] = {type: "null", val :"null"};
+			}
+			
+			
+			for (i=0;i<body.opcodes.length;i++) {
+				var data:Array = body.opcodes[i];
+				var opcode:int = data[0];
+				var params:Array = data[1];
+				switch (opcode) {
+					case Opcode.OP_debug:
+					case Opcode.OP_debugfile:
+					case Opcode.OP_pushstring:
+					case Opcode.OP_debugline:
+						//ignore all debug opcode
+						break;
+					case Opcode.OP_getlocal0:
+						operator_stack.push(locals[0]);
+						break;
+					case Opcode.OP_getlocal1:
+						operator_stack.push(locals[1]);
+						break;
+					case Opcode.OP_getlocal2:
+						operator_stack.push(locals[2]);
+						break;
+					case Opcode.OP_getlocal3:
+						operator_stack.push(locals[3]);
+						break;
+					case Opcode.OP_setlocal0:
+						set_local( locals,0, operator_stack.pop(), list );
+						
+						break;
+					case Opcode.OP_setlocal1:
+						set_local( locals,1, operator_stack.pop(), list );
+						break;
+					case Opcode.OP_setlocal2:
+						set_local( locals,2, operator_stack.pop(), list );
+						break;
+					case Opcode.OP_setlocal3:
+						set_local( locals,3, operator_stack.pop(), list );
+						break;
+					case Opcode.OP_getlocal:
+						operator_stack.push(locals[params[0].val]);
+						break;
+					case Opcode.OP_setlocal:
+						set_local( locals, params[0].val, operator_stack.pop(), list );
+						break;
+					case Opcode.OP_pushscope:
+						scope_stack.push( operator_stack.pop() );
+						break;
+					case Opcode.OP_popscope:
+						scope_stack.pop();
+						break;
+					
+					case Opcode.OP_pushbyte:
+						operator_stack.push( {type: "int", val: params[0].val.toString()} );
+						break;
+					case Opcode.OP_convert_i:
+						temp = operator_stack.pop();
+						temp = {type:"int", val:  temp.val };
+						operator_stack.push(temp);
+						break;
+					case Opcode.OP_convert_u:
+						temp = operator_stack.pop();
+						temp = {type:"uint", val:  temp.val};
+						operator_stack.push(temp);
+						break;
+					case Opcode.OP_convert_s:
+						temp = operator_stack.pop();
+						temp = {type:"String", val:  temp.val};
+						operator_stack.push(temp);
+						break;
+					case Opcode.OP_convert_d:
+						temp = operator_stack.pop();
+						temp = {type:"double", val:  temp.val};
+						operator_stack.push(temp);
+						break;
+					case Opcode.OP_convert_b:
+						temp = operator_stack.pop();
+						temp = {type:"Boolean", val:  temp.val};
+						operator_stack.push(temp);
+						break;
+					case Opcode.OP_convert_o:
+						temp = operator_stack.pop();
+						temp = {type:"Object", val:  temp.val};
+						operator_stack.push(temp);
+						break;
+					case Opcode.OP_add:
+						temp = operator_stack.pop();
+						temp2 = operator_stack.pop();
+						operator_stack.push({type:"unknown", val: temp2.val + " + " + temp.val});
+						break;
+					case Opcode.OP_add_i:
+						temp = operator_stack.pop();
+						temp2 = operator_stack.pop();
+						operator_stack.push({type:"int", val: temp2.val + " + " + temp.val});
+						break;
+					case Opcode.OP_add_d:
+						temp = operator_stack.pop();
+						temp2 = operator_stack.pop();
+						operator_stack.push({type:"double", val: temp2.val + " + " + temp.val});
+						break;
+					case Opcode.OP_findpropstrict:
+						mname_name = _resolve_multiname_in_methodbody(params[0].val, operator_stack);
+						
+						//operator_stack.push({type:"property", val: mname_name});
+						operator_stack.push({type:"property", val: ""});
+						break;
+					case Opcode.OP_pushstring:
+						operator_stack.push({type:"String", val: _quoteString( __string(params[0].val) )});
+						break;
+					case Opcode.OP_callproperty:
+					case Opcode.OP_constructprop:
+						temp = params[0].val; // index
+						temp2 = params[1].val; //args count
+						args = [];
+						for (j=0;j<temp2;j++) {
+							args.unshift( operator_stack.pop().val );
+						}
+						
+						mname_name = _resolve_multiname_in_methodbody(temp, operator_stack);
+						
+						obj = operator_stack.pop();//object
+						str = mname_name + "(" + args.join(", ") + ')';
+						if (opcode == Opcode.OP_callproperty) {
+							if (obj.val) {
+								str = obj.val + "." + str;
+							}
+						} else if (opcode == Opcode.OP_constructprop) {
+							str = "new " + str;
+						}
+						
+						
+						operator_stack.push({type:"unknown", val: str });
+						break;
+					case Opcode.OP_constructsuper:
+						temp = params[0].val; // args count
+						args = [];
+						for (j=0;j<temp;j++) {
+							args.unshift( operator_stack.pop().val );
+						}
+						
+						obj = operator_stack.pop();//object
+						str = "super(" + args.join(", ") + ')';
+						if (obj.val) {
+							str = obj.val + "." + str;
+						}
+						list.push( str + ";");
+						//operator_stack.push({type:"unknown", val: str });
+						break;
+					
+					case Opcode.OP_coerce:
+						
+						break;
+					case Opcode.OP_pop:
+						list.push( operator_stack.pop().val + ";");
+						break;
+				}
+			}
+			
+			
+			
+			/*
+			
+			
+			*/
+			/*
+			 * 
+			case Opcode.OP_debugfile:
+			case Opcode.OP_pushstring:
+			//s += '"' + abc.strings[readU32()].replace(/\n/g,"\\n").replace(/\t/g,"\\t") + '"'
+			params.push(new OpcodeParam("u32", stream.read_u32(), "string"));
+			s += '"' + Global.STRING(params[0].val).replace(/\n/g,"\\n").replace(/\t/g,"\\t") + '"' ;
+			
+			break
+			case Opcode.OP_pushnamespace:
+			//s += abc.namespaces[readU32()]
+			params.push(new OpcodeParam("u32", stream.read_u32(), "namespace"));
+			s +=  Global.NAMESPACE(params[0].val).nameStr();
+			
+			break
+			case Opcode.OP_pushint:
+			//var i:int = abc.ints[readU32()]
+			//s += i + "\t// 0x" + i.toString(16)
+			params.push(new OpcodeParam("u32", stream.read_u32(), "int"));
+			var int_val:int = Global.INT(params[0].val);
+			
+			s +=  int_val + "\t// 0x" + int_val.toString(16);
+			
+			break
+			case Opcode.OP_pushuint:
+			//var u:uint = abc.uints[readU32()]
+			//s += u + "\t// 0x" + u.toString(16)
+			params.push(new OpcodeParam("u32", stream.read_u32(), "uint"));
+			var uint_val:int = Global.UINT(params[0].val);
+			s +=  uint_val + "\t// 0x" + int_val.toString(16);
+			
+			break;
+			case Opcode.OP_pushdouble:
+			//s += abc.doubles[readU32()]
+			params.push(new OpcodeParam("u32", stream.read_u32(), "double"));
+			s +=  Global.DOUBLE(params[0].val);
+			break;
+			case Opcode.OP_getsuper: 
+			case Opcode.OP_setsuper: 
+			case Opcode.OP_getproperty: 
+			case Opcode.OP_initproperty: 
+			case Opcode.OP_setproperty: 
+			case Opcode.OP_getlex: 
+			case Opcode.OP_findpropstrict: 
+			case Opcode.OP_findproperty:
+			case Opcode.OP_finddef:
+			case Opcode.OP_deleteproperty: 
+			case Opcode.OP_istype: 
+			case Opcode.OP_coerce: 
+			case Opcode.OP_astype: 
+			case Opcode.OP_getdescendants:
+			//s += abc.names[readU32()]
+			params.push(new OpcodeParam("u32", stream.read_u32(), "multiname"));
+			s +=  Global.MULTINAME(params[0].val);
+			break;
+			case Opcode.OP_constructprop:
+			case Opcode.OP_callproperty:
+			case Opcode.OP_callproplex:
+			case Opcode.OP_callsuper:
+			case Opcode.OP_callsupervoid:
+			case Opcode.OP_callpropvoid:
+			//s += abc.names[readU32()]
+			//s += " (" + readU32() + ")"
+			
+			params.push(new OpcodeParam("u32", stream.read_u32(), "multiname"));
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			s +=  Global.MULTINAME(params[0].val);
+			s +=  " (" + params[1].val + ")";
+			break;
+			case Opcode.OP_newfunction: {
+			//var method_id = readU32()
+			//s += abc.methods[method_id]
+			//abc.methods[method_id].anon = true
+			params.push(new OpcodeParam("u32", stream.read_u32(), "method"));
+			s +=  Global.METHOD(params[0].val).nameStr();
+			break;
+			}
+			case Opcode.OP_callstatic:
+			//s += abc.methods[readU32()]
+			//s += " (" + readU32() + ")"
+			params.push(new OpcodeParam("u32", stream.read_u32(), "method"));
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			s +=  Global.METHOD(params[0].val).nameStr();
+			s += " (" + params[1].val + ")";
+			break;
+			case Opcode.OP_newclass: 
+			//s += abc.instances[readU32()]
+			params.push(new OpcodeParam("u32", stream.read_u32(), "instance"));
+			s +=  Global.INSTANCE((params[0].val)).nameStr();
+			break;
+			case Opcode.OP_lookupswitch:
+			var pos:int = stream.pos-1;
+			var p1:int = stream.read_s24();
+			var target:int = pos + p1;
+			var maxindex :int = stream.read_u32();
+			
+			//jump_to_op_index will be replaced to the op index later
+			params.push(new OpcodeParam("s24", p1, "", {jump_to_op_index: -1, jump_to:target, offset_from_op_start: true}));
+			params.push(new OpcodeParam("u32", maxindex));
+			var l:String = labels.labelFor(target);
+			s += "default:" + l; // target + "("+(target-pos)+")"
+			
+			s += " maxcase:" + maxindex;
+			for ( i=0; i <= maxindex; i++) {
+			var p2:int = stream.read_s24();
+			target = pos + p2;
+			s += " " + labels.labelFor(target) // target + "("+(target-pos)+")"
+			params.push(new OpcodeParam("s24", p2, "", {jump_to_op_index: -1, jump_to:target, offset_from_op_start: true}));
+			}
+			break;
+			case Opcode.OP_jump:
+			case Opcode.OP_iftrue:		case Opcode.OP_iffalse:
+			case Opcode.OP_ifeq:		case Opcode.OP_ifne:
+			case Opcode.OP_ifge:		case Opcode.OP_ifnge:
+			case Opcode.OP_ifgt:		case Opcode.OP_ifngt:
+			case Opcode.OP_ifle:		case Opcode.OP_ifnle:
+			case Opcode.OP_iflt:		case Opcode.OP_ifnlt:
+			case Opcode.OP_ifstricteq:	case Opcode.OP_ifstrictne:
+			var offset :int= stream.read_s24();
+			var target2:int = stream.pos + offset;
+			s += target2 + " ("+offset+")";
+			s += labels.labelFor(target2);
+			if (!((code.position) in labels)) {
+			s += "\n";
+			}
+			//jump_to_op_index will be replaced to the op index later
+			params.push(new OpcodeParam("s24", offset, "", {jump_to_op_index: -1, jump_to:target2, offset_from_op_start: false}));
+			break;
+			case Opcode.OP_inclocal:
+			case Opcode.OP_declocal:
+			case Opcode.OP_inclocal_i:
+			case Opcode.OP_declocal_i:
+			case Opcode.OP_getlocal:
+			case Opcode.OP_kill:
+			case Opcode.OP_setlocal:
+			case Opcode.OP_debugline:
+			case Opcode.OP_getglobalslot:
+			case Opcode.OP_getslot:
+			case Opcode.OP_setglobalslot:
+			case Opcode.OP_setslot:
+			case Opcode.OP_pushshort:
+			case Opcode.OP_newcatch:
+			//s += readU32()
+			
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			s += params[0].val;
+			break
+			case Opcode.OP_debug:
+			//s += code.readUnsignedByte() 
+			//s += " " + readU32()
+			//s += " " + code.readUnsignedByte()
+			//s += " " + readU32()
+			
+			params.push(new OpcodeParam("u8", stream.read_u8()));
+			params.push(new OpcodeParam("u32", stream.read_u32(), "string"));
+			params.push(new OpcodeParam("u8", stream.read_u8()));
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			
+			s += params[0].val;
+			s += " " + params[1].val;
+			s += " " + params[2].val;
+			s += " " + params[3].val;
+			break;
+			case Opcode.OP_newobject:
+			//s += "{" + readU32() + "}"
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			s +="{" + params[0].val + "}";
+			break;
+			case Opcode.OP_newarray:
+			//s += "[" + readU32() + "]"
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			s +="[" +  params[0].val + "]";
+			break;
+			case Opcode.OP_call:
+			case Opcode.OP_construct:
+			case Opcode.OP_constructsuper:
+			//s += "(" + readU32() + ")"
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			s +="(" + params[0].val + ")";
+			break;
+			case Opcode.OP_pushbyte:
+			case Opcode.OP_getscopeobject:
+			//s += code.readByte()
+			params.push(new OpcodeParam("u8", stream.read_u8()));
+			s += params[0].val;
+			break;
+			case Opcode.OP_hasnext2:
+			//s += readU32() + " " + readU32()
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			params.push(new OpcodeParam("u32", stream.read_u32()));
+			s += params[0].val + " " + params[1].val;
+			default:
+			if (opNames[opcode] == ("0x"+opcode.toString(16).toUpperCase()))
+			s += " UNKNOWN OPCODE"
+			break;
+			*/
+			
+			
 			
 			return list;
+		}
+		
+		
+		private function set_local(locals:Array, index:int, obj:Object, list:Array): void{
+			locals[index] = obj;
+			if (index >=1) {
+				list.push("_loc" + index + " = " + obj.val + ";");
+				locals[index] = {type:"local", val: "_loc" + index};
+			}
+		}
+		private function _resolve_multiname_in_methodbody(mindex:int, operator_stack:Array):String {
+			var mname:Multiname = __multiname(mindex);
+			var mname_name:String = "";
+			switch (mname.kind)
+			{
+				case Constant.CONSTANT_QName:
+				case Constant.CONSTANT_QNameA:
+					//name ns not in stack
+					mname_name = __multiname_name(mindex);
+					break;
+				
+				case Constant.CONSTANT_RTQName:
+				case Constant.CONSTANT_RTQNameA:
+					//ns in stack
+					 operator_stack.pop();
+					mname_name = __multiname_name(mindex);
+					break;
+				
+				case Constant.CONSTANT_RTQNameL:
+				case Constant.CONSTANT_RTQNameLA:
+					//name ns  in stack
+					operator_stack.pop();
+					operator_stack.pop();
+					break;
+				
+				case Constant.CONSTANT_Multiname:
+				case Constant.CONSTANT_MultinameA:
+					//name nsset not in stack
+					mname_name = __multiname_name(mindex);
+					break;
+				
+				case Constant.CONSTANT_MultinameL:
+				case Constant.CONSTANT_MultinameLA:
+					//name in stack
+					operator_stack.pop();
+					break;
+				/*NOT MENTION IN AVM2, COPRY FROM adbdump.as*/
+				case Constant.CONSTANT_NameL:
+				case Constant.CONSTANT_NameLA:
+					break;
+				case Constant.CONSTANT_TypeName:
+					break;
+				default:
+			}
+			return mname_name;
 		}
 		private function _quoteString(str:String ):String {
 			return '"' + str + '"';
