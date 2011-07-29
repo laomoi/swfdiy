@@ -27,7 +27,7 @@ package com.swfdiy.data.ABC
 		
 		
 		public function toString():String {
-			return "from:" + from + ",to=" + to  + ",target=" + target  + ",exc_type=" + exc_type + ",var_name=" + var_name;
+			return "from:" + op_index_from + ",to=" + op_index_to  + ",target=" + op_index_target  + ",exc_type=" + exc_type + ",var_name=" + var_name;
 		}
 	}
 }
