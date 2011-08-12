@@ -639,7 +639,8 @@ package
 						obj = operator_stack.pop();//object
 						str = mname_name + "(" + args.join(", ") + ')';
 						if (opcode == Opcode.OP_callproperty) {
-							if (obj.val) {
+							if (obj && obj.val) {
+							
 								str = obj.val + "." + str;
 							}
 						} else if (opcode == Opcode.OP_constructprop) {
