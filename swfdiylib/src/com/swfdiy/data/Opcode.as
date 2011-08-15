@@ -161,6 +161,22 @@ package com.swfdiy.data
 		public static const OP_debugfile:int = 0xF1;
 		public static const OP_bkptline:int = 0xF2;
 		
+		public static function isJumpOp(op:int):Boolean {
+			if (op == OP_jump || isJumpConditionalOp(op)) {
+				return true;
+			}
+			return false;
+		}
+		
+		public static function isJumpConditionalOp(op:int):Boolean {
+			if (op >= OP_ifnlt && 
+				op <= OP_ifstrictne ) {
+				return true;
+			}
+			return false;	
+			
+		}
+		
 		public static const opNames :Array = [
 			"OP_0x00       ",
 			"bkpt          ",

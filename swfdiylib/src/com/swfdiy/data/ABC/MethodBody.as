@@ -169,11 +169,11 @@ package com.swfdiy.data.ABC
 				params = [];
 				
 				
-				var s:String = "";
+				var s:String = opcodes.length + " : ";
 				s += Opcode.opNames[opcode];
 				s += Opcode.opNames[opcode].length < 8 ? _indent+_indent:_indent;
 				
-				if (opcode ==  Opcode.OP_label || (stream.pos-1) in labels ) {
+				if (opcode ==  Opcode.OP_label  ) {//|| (stream.pos-1) in labels
 					var label_str:String = labels.labelFor( stream.pos -1);
 					s += label_str;
 				}
@@ -287,14 +287,14 @@ package com.swfdiy.data.ABC
 						//jump_to_op_index will be replaced to the op index later
 						params.push(new OpcodeParam("s24", p1, "", {jump_to_op_index: -1, jump_to:target, offset_from_op_start: true}));
 						params.push(new OpcodeParam("u32", maxindex));
-						var l:String = labels.labelFor(target);
-						s += "default:" + l; // target + "("+(target-pos)+")"
+						//var l:String = labels.labelFor(target);
+						//s += "default:" + l; // target + "("+(target-pos)+")"
 						
 						s += " maxcase:" + maxindex;
 						for ( i=0; i <= maxindex; i++) {
 							var p2:int = stream.read_s24();
 							target = pos + p2;
-							s += " " + labels.labelFor(target) // target + "("+(target-pos)+")"
+							//s += " " + labels.labelFor(target) // target + "("+(target-pos)+")"
 							params.push(new OpcodeParam("s24", p2, "", {jump_to_op_index: -1, jump_to:target, offset_from_op_start: true}));
 						}
 						break;
@@ -308,11 +308,11 @@ package com.swfdiy.data.ABC
 					case Opcode.OP_ifstricteq:	case Opcode.OP_ifstrictne:
 						var offset :int= stream.read_s24();
 						var target2:int = stream.pos + offset;
-						s += target2 + " ("+offset+")";
-						s += labels.labelFor(target2);
-						if (!((code.position) in labels)) {
-							s += "\n";
-						}
+						s += " offset="+offset+"";
+						//s += labels.labelFor(target2);
+						//if (!((code.position) in labels)) {
+						//	s += "\n";
+						//}
 						//jump_to_op_index will be replaced to the op index later
 						params.push(new OpcodeParam("s24", offset, "", {jump_to_op_index: -1, jump_to:target2, offset_from_op_start: false}));
 						break;
@@ -330,17 +330,11 @@ package com.swfdiy.data.ABC
 					case Opcode.OP_setslot:
 					case Opcode.OP_pushshort:
 					case Opcode.OP_newcatch:
-						//s += readU32()
 						
 						params.push(new OpcodeParam("u32", stream.read_u32()));
 						s += params[0].val;
 						break
 					case Opcode.OP_debug:
-						//s += code.readUnsignedByte() 
-						//s += " " + readU32()
-						//s += " " + code.readUnsignedByte()
-						//s += " " + readU32()
-						
 						params.push(new OpcodeParam("u8", stream.read_u8()));
 						params.push(new OpcodeParam("u32", stream.read_u32(), "string"));
 						params.push(new OpcodeParam("u8", stream.read_u8()));
@@ -396,6 +390,7 @@ package com.swfdiy.data.ABC
 		public function dump(pre:String = "", indent:String="    ") :String {
 			var str:String = "";
 			var i:int;
+			var j:int;
 			str += pre + "{:"   + "\n";
 			str += pre + "method:"  + method  + "\n";
 			str += pre + "max_stack:"  + max_stack  + "\n";
@@ -416,12 +411,21 @@ package com.swfdiy.data.ABC
 			
 			for (i=0;i<dump_opcodes.length;i++) {
 				var s:String = dump_opcodes[i];
+				var op:int = opcodes[i][0];
+				var params:Array = opcodes[i][1];
+				for (j=0;j<params.length;j++) {
+					if (params[j].extra && params[j].extra['jump_to_op_index'] != -1) {
+						s += " to:" + params[j].extra['jump_to_op_index'] + " ";
+					}
+				}
+				str += pre + indent + s + "\n";
+				
 				//multiline?
-				var s_list:Array = s.split(/\n/);
+				/*var s_list:Array = s.split(/\n/);
 				for (var j:int=0;j<s_list.length;j++) {
 					str += pre + indent + s_list[j] + "\n";
 				}
-				
+				*/
 			}
 			
 		
