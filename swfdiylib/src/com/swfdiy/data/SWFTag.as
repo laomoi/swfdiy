@@ -2,6 +2,7 @@ package com.swfdiy.data
 {
 	import flash.net.FileReference;
 	import flash.utils.ByteArray;
+	import flash.utils.Endian;
 	
 
 	public class SWFTag
@@ -22,6 +23,25 @@ package com.swfdiy.data
 		public function get rawdata():ByteArray
 		{
 			return _stream.rawdata;
+		}
+		
+		public function tagData():ByteArray {
+			var len:int = this.length;
+			var ba:ByteArray = new ByteArray();
+			ba.endian = Endian.LITTLE_ENDIAN;
+			var s:int = ( _id <<6 ) & 0xffff;
+			if (len < 63) {
+				s = s | len;
+				ba.writeShort(s);
+			} else {
+				s = s | 0x3f;
+				ba.writeShort(s);
+				
+				//more SI32 LEN
+				ba.writeInt(len);
+			}
+			ba.writeBytes(_stream.rawdata,0);
+			return ba;
 		}
 		
 		public function set data(byteStream:SWFStream):void {
