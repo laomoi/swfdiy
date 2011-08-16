@@ -8,7 +8,7 @@ package com.swfdiy.data.SWFTag
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 	
-	import org.osmf.layout.AbsoluteLayoutFacet;
+
 	 
 	public class TagSymbolClass extends SWFTag
 	{

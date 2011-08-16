@@ -144,14 +144,18 @@ package com.swfdiy.data
 			return tag;
 		}
 		
-		public function make_swf_bytes_from_tags(tags:Array):ByteArray{
+		public function make_swf_bytes_from_tags(tags:Array, compressed:Boolean=false):ByteArray{
 			var swf_bytes:ByteArray = new ByteArray;
 			
 			var header_bytes :ByteArray = this.get_bytes(0, _tag_start_pos);
 			var tag_bytes:ByteArray = new ByteArray;
 			
 			for (var i:int=0;i<tags.length;i++) {
-				tag_bytes.writeBytes(tags[i],0);
+				if (tags[i] is ByteArray) {
+					tag_bytes.writeBytes(tags[i],0);
+				} else if (tags[i] is SWFTag) {
+					tag_bytes.writeBytes(tags[i].tagData());
+				}
 			}
 			
 			//update header length
@@ -161,9 +165,25 @@ package com.swfdiy.data
 			header_bytes.writeUnsignedInt(header_bytes.length + tag_bytes.length);
 			swf_bytes.writeBytes(header_bytes,0);
 			swf_bytes.writeBytes(tag_bytes,0);
+			
+			if (compressed) {
+				//have to compressed after 8 byrtes
+				
+				var compressedPart:ByteArray = new ByteArray;
+				compressedPart.writeBytes(swf_bytes, 8);
+				compressedPart.position = 0;
+				compressedPart.compress();
+				var new_swf_bytes:ByteArray = new ByteArray();
+				new_swf_bytes.writeBytes(swf_bytes, 0, 8);
+				new_swf_bytes.writeBytes(compressedPart);
+				new_swf_bytes[0] = 67;//CWS's C
+				return new_swf_bytes;
+			}
+			
 			return swf_bytes;
 		}
 		
+	
 		public function get_uncompress_bytes():ByteArray {
 			var swf_bytes:ByteArray = new ByteArray;
 			
@@ -174,10 +194,12 @@ package com.swfdiy.data
 			return swf_bytes;
 		}
 		
-		public function save():void {
+		/*public function save(fileName:String=""):void {
 			var file:FileReference = new FileReference();
-			//file.save(_stream., "b.txt");
-		}
+			file.save(_stream., fileName);
+		}*/
+		
+		
 		
 	}
 }
