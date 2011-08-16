@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<s:DefaultGridItemEditor xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						 xmlns:s="library://ns.adobe.com/flex/spark" 
+						 xmlns:mx="library://ns.adobe.com/flex/mx" >
+	<fx:Script>
+		<![CDATA[
+			override public function get value():Object
+			{
+				return textArea.text;            
+			}
+			override protected function validate():Boolean
+			{
+				var s:String = String(value);
+				var reg:RegExp = /^\d+$/;
+				if (s.match(reg)) {
+					return true;
+				}
+				
+				return false;
+			}
+			override public function set value(newValue:Object):void
+			{
+				//convert to int
+				
+				textArea.text = uint(newValue).toString();
+			}                                     
+		]]>
+	</fx:Script>
+</s:DefaultGridItemEditor >

@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:ns1="*"
+		 width="900" height="700">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Label x="12" y="6" text="int"/>
+	<s:Label x="134" y="7" text="unit"/>
+	<s:Label x="251" y="7" width="39" text="double" />
+	<s:Label x="374" y="5" text="string"/>
+	<s:Label x="378" y="157" text="multiname"/>
+	<s:Label x="13" y="158" text="namespace"/>
+	<s:Label x="10" y="312" text="class"/>
+	<s:Label x="12" y="463" text="scripts"/>
+	<s:Label x="545" y="311" text="methods"/>
+	<s:Label x="225" y="463" text="traits&#xd;"/>
+	<s:Label x="258" y="157" text="ns_set"/>
+	<s:DataGrid id="multinamesList" x="377" y="174" width="350" height="129" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn width="75" dataField="dataKind" editable="false" headerText="kind"
+							  resizable="true" sortable="false">
+			
+				
+				</s:GridColumn>
+				<s:GridColumn width="100" dataField="dataName" editable="false" headerText="name"
+							  sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+				
+				
+				</s:GridColumn>
+				<s:GridColumn width="60" dataField="dataNameSpace" editable="false" headerText="ns"
+							  sortable="false" itemRenderer="renderer.NameSpaceForwardItemRenderer"></s:GridColumn>
+				<s:GridColumn dataField="dataNameSpaceSet" editable="false" headerText="ns_set"
+							  sortable="false" itemRenderer="renderer.NameSpaceSetForwardItemRenderer"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid id="namespacesList" x="13" y="174" width="232" height="129" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn width="75" dataField="dataKind" editable="false" headerText="kind"
+							  resizable="true" sortable="false">
+			
+				
+				</s:GridColumn>
+				<s:GridColumn dataField="dataName" editable="false" headerText="name"
+							  sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+				
+					
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid id="doublesList" x="247" y="19" width="119" height="132" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+							  sortable="false" itemEditor="editor.NumberEditor">
+				
+				
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid id="uintsList" x="130" y="20" width="113" height="131" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+							  sortable="false" itemEditor="editor.UintEditor">
+				
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid id="stringsList" x="374" y="17" width="267" height="132" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+							  sortable="false" itemEditor="editor.StringEditor">
+				
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:Button x="480" y="496" label="Apply" click="onApply(event)"/>
+	<s:DataGrid id="intsList" x="10" y="21" width="117" height="130" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+							  sortable="false"  itemEditor="editor.IntEditor">
+				
+					
+				
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid x="599" y="479" width="168" height="67" requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="50" dataField="dataAddr" headerText="addr" resizable="true"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn width="90" dataField="dataBinary" headerText="binary" sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataMemo" headerText="memo"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid id="methodsList" x="543" y="331" width="274" height="118" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataName" editable="false" headerText="Name"
+							  resizable="true" sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+			
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:Label id="methodLabel" x="558" y="561" width="135" height="18"/>
+	<s:DataGrid id="namespacesetList" x="253" y="174" width="119" height="129" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+							  sortable="false" editable="false">
+				
+					
+				
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid id="classesList" x="10" y="333" width="206" height="112" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataMethod" editable="false" headerText="cinit"
+							  sortable="false"
+							  itemRenderer="renderer.MethodForwardItemRenderer"
+							  ></s:GridColumn>
+				<s:GridColumn dataField="dataTraitsCount" editable="false" headerText="traits"
+							  resizable="true" sortable="false" itemRenderer="renderer.TraitsListItemRenderer">
+			
+				
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:DataGrid id="instancesList" x="221" y="333" width="314" height="112" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataFlags" editable="false" headerText="flags"
+							  sortable="false"></s:GridColumn>
+				<s:GridColumn dataField="dataName" editable="false" headerText="Name"
+							  resizable="true" sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+			
+				
+				</s:GridColumn>
+				<s:GridColumn dataField="dataExtends" editable="false" headerText="extends"
+							  sortable="false"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	
+	</s:DataGrid>
+	<s:Label x="228" y="312" text="instance"/>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.ABC.ClassInfo;
+			import com.swfdiy.data.ABC.Constant;
+			import com.swfdiy.data.ABC.MMultiname;
+			import com.swfdiy.data.ABC.MNamespace;
+			import com.swfdiy.data.ABC.MQName;
+			import com.swfdiy.data.ABC.MTypeName;
+			import com.swfdiy.data.ABC.MethodBody;
+			import com.swfdiy.data.ABC.MethodInfo;
+			import com.swfdiy.data.ABC.Multiname;
+			import com.swfdiy.data.ABC.NamespaceSet;
+			import com.swfdiy.data.ABC.RTQName;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.events.GridEvent;
+			private var _abcWrapper :ABCWrapper; 
+			private var _abcIndex:int;
+			private var _abc:ABC;
+			
+			
+			
+			
+			
+			public function init(abcWrapper:ABCWrapper, index:int):void {
+				_abcWrapper = abcWrapper;
+				_abcIndex = index;
+				_abc = _abcWrapper.getABC();
+				this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreated);
+				
+				this.addEventListener("focus_string", onFocusString);
+				this.addEventListener("focus_namespace", onFocusNameSpace);
+				this.addEventListener("focus_namespaceset", onFocusNameSpaceSet);
+				this.addEventListener("focus_method", onFocusMethod);
+				this.addEventListener("list_traits", onListTraits);
+			}
+			
+			
+			
+			protected function onCreated(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				var i:int;
+				var l:Array = [];
+				var src:Array = _abc.constant_pool.ints;
+				for (i=1;i<src.length;i++) {
+					l.push({dataIndex: i, dataValue:src[i]});
+				}
+				
+				intsList.dataProvider = new ArrayCollection(l);
+				
+				
+				l = [];
+				src = _abc.constant_pool.uints;
+				for (i=1;i<src.length;i++) {
+					l.push({dataIndex: i, dataValue:src[i]});
+				}
+				
+				uintsList.dataProvider = new ArrayCollection(l);
+				
+				
+				l = [];
+				src = _abc.constant_pool.doubles;
+				for (i=1;i<src.length;i++) {
+					l.push({dataIndex: i, dataValue:src[i]});
+				}
+				
+				doublesList.dataProvider = new ArrayCollection(l);
+				
+				l = [];
+				src = _abc.constant_pool.strings;
+				for (i=1;i<src.length;i++) {
+					l.push({dataIndex: i, dataValue:src[i]});
+				}
+				stringsList.dataProvider = new ArrayCollection(l);
+				
+				
+				l = [];
+				src = _abc.constant_pool.namespaces;
+				for (i=1;i<src.length;i++) {
+					var ns:MNamespace = MNamespace(src[i]);
+					l.push({
+						dataIndex: i, 
+						dataKind:  ns.kind + " " + _quoteString( Constant.toStr(ns.kind   )  ) ,
+						dataName:  ns.name + " " + _quoteString( __string( ns.name   )  ) ,
+						dataNameIndex: ns.name 
+					
+					});
+				}
+				namespacesList.dataProvider = new ArrayCollection(l);
+				
+				
+				l = [];
+				src = _abc.constant_pool.ns_sets;
+				for (i=1;i<src.length;i++) {
+					var ns_set:NamespaceSet = NamespaceSet(src[i]);
+					l.push({
+						dataIndex: i, 
+						dataValue: ns_set.ns.join(",")
+					});
+				}
+				namespacesetList.dataProvider = new ArrayCollection(l);
+				
+				
+				l = [];
+				src = _abc.constant_pool.multinames;
+				for (i=1;i<src.length;i++) {
+					var mul:Multiname = Multiname(src[i]);
+					var obj:Object = {
+						dataIndex: i, 
+						dataKind:mul.kind + " " + _quoteString( Constant.toStr(mul.kind   )  ) ,
+						dataName: "",
+						dataNameIndex: "",
+						dataNameSpaceIndex:"",
+						dataNameSpace:"",
+						dataNameSpaceSetIndex:"",
+						dataNameSpaceSet:""
+					};
+					
+					if ( mul.data is MQName) {
+						obj['dataNameSpace'] = MQName(mul.data).ns;
+						obj['dataNameSpaceIndex'] = MQName(mul.data).ns;
+						obj['dataName'] = MQName(mul.data).name + " " + _quoteString( __string(mul.data.name) );
+						obj['dataNameIndex'] = MQName(mul.data).name;
+					} else if (mul.data is RTQName) {
+						obj['dataName'] = RTQName(mul.data).name + " " + _quoteString( __string(mul.data.name) );
+						obj['dataNameIndex'] = RTQName(mul.data).name;
+					} else if (mul.data is MMultiname) {
+						obj['dataNameSpaceSet'] = MMultiname(mul.data).ns_set;
+						obj['dataNameSpaceSetIndex'] = MMultiname(mul.data).ns_set;
+						obj['dataName'] = MMultiname(mul.data).name + " " + _quoteString( __string(mul.data.name) );
+						obj['dataNameIndex'] = MMultiname(mul.data).name;
+					} else if (mul.data is MTypeName) {
+						obj['dataName'] = MTypeName(mul.data).name + " " + _quoteString( __string(mul.data.name) );
+						obj['dataNameIndex'] = MTypeName(mul.data).name;
+					}
+					
+					l.push(obj);
+				}
+				multinamesList.dataProvider = new ArrayCollection(l);
+				
+				
+				//methods
+				l = [];
+				src = _abc.methods;
+				for (i=0;i<src.length;i++) {
+					l.push({dataIndex: i, dataNameIndex:src[i].name ,dataName:src[i].name + " " + _quoteString(__string(src[i].name) )});
+				}
+				methodsList.dataProvider = new ArrayCollection(l);
+				
+				//classes
+				l = [];
+				src = _abc.classes;
+				for (i=0;i<src.length;i++) {
+					var cl:ClassInfo = ClassInfo(src[i]);
+					var obj:Object = {
+						dataIndex: i, 
+						dataMethodIndex: cl.cinit,
+						dataMethod: cl.cinit+ " " + _quoteString( __string(  __method(cl.cinit).name   )  ) ,
+						dataTraits:"",
+						dataTraitsCount:""
+					};
+					
+					if ( cl.trait_count) {
+						obj['dataTraits'] = cl.traits;
+						obj['dataTraitsCount'] = "count:" + cl.trait_count;
+					} 
+					l.push(obj);
+				}
+				classesList.dataProvider = new ArrayCollection(l);
+				
+				
+				
+				
+				//var e:GridEvent
+				//intsList.addEventListener(GridEvent.
+			}
+			
+			protected function onApply(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				//refresh the abc constant
+				
+				var i:int;
+				var l:ArrayCollection;
+				
+				l = ArrayCollection(intsList.dataProvider);
+				_abc.constant_pool.ints = [_abc.constant_pool.ints[0]];
+				for (i=0;i<l.length;i++) {
+					_abc.constant_pool.ints[i+1] = l[i]['dataValue'];
+				}
+				_abc.constant_pool.int_count = _abc.constant_pool.ints.length;
+				
+				
+				l = ArrayCollection(uintsList.dataProvider);
+				_abc.constant_pool.uints = [_abc.constant_pool.uints[0]];
+				for (i=0;i<l.length;i++) {
+					_abc.constant_pool.uints[i+1] = l[i]['dataValue'];
+				}
+				_abc.constant_pool.uint_count = _abc.constant_pool.uints.length;
+				
+				l = ArrayCollection(doublesList.dataProvider);
+				_abc.constant_pool.doubles = [_abc.constant_pool.doubles[0]];
+				for (i=0;i<l.length;i++) {
+					_abc.constant_pool.doubles[i+1] = l[i]['dataValue'];
+				}
+				_abc.constant_pool.double_count = _abc.constant_pool.doubles.length;
+				
+				
+				l = ArrayCollection(stringsList.dataProvider);
+				_abc.constant_pool.strings = [_abc.constant_pool.strings[0]];
+				for (i=0;i<l.length;i++) {
+					_abc.constant_pool.strings[i+1] = l[i]['dataValue'];
+				}
+				_abc.constant_pool.string_count = _abc.constant_pool.strings.length;
+				
+				_abc.changed = true;
+			}
+			
+			
+			
+			
+			
+			
+			/*maps*/		
+			
+			private function __multiname(index:int):Multiname {
+				return _abc.constant_pool.multinames[index];
+			}
+			private function __multiname_name(index:int):String {
+				var mm:Multiname = __multiname(index);
+				if (mm == null) {
+					return "*";
+				}
+				return __string(mm.data.name);
+			}
+			
+			private function __string(index:int):String {
+				return _abc.constant_pool.strings[index];
+			}
+			private function __int(index:int):int {
+				return _abc.constant_pool.ints[index];
+			}
+			private function __uint(index:int):uint {
+				return _abc.constant_pool.uints[index];
+			}
+			private function __double(index:int):Number {
+				return _abc.constant_pool.doubles[index];
+			}
+			private function __namespace(index:int):MNamespace {
+				return _abc.constant_pool.namespaces[index];
+			}
+			
+			private function __nsset(index:int):NamespaceSet {
+				return _abc.constant_pool.ns_sets[index];
+			}
+			private function __method(index:int):MethodInfo {
+				return _abc.methods[index];
+			}
+			private function __method_body(index:int):MethodBody {
+				return _abc.method_bodys[index];
+			}
+			private function __namespaceStr(ns:MNamespace):String {
+				var nsStr:String = "";
+				switch (ns.kind ) {
+					case Constant.CONSTANT_Namespace:
+						//custome namespace
+						nsStr = __string(ns.name);
+						break;
+					case Constant.CONSTANT_PackageNamespace:
+						nsStr = "public";
+						break;
+					case Constant.CONSTANT_PackageInternalNs:
+						//nsStr = "internal";
+						nsStr = "";
+						break;
+					case Constant.CONSTANT_ProtectedNamespace:
+						nsStr = "protected";
+						break;
+					case Constant.CONSTANT_ExplicitNamespace:
+						nsStr = __string(ns.name);
+						break;
+					case Constant.CONSTANT_StaticProtectedNs:
+						nsStr = "static";
+						break;
+					case Constant.CONSTANT_PrivateNs:
+						nsStr = "private";
+						break;
+				}
+				
+				
+				return nsStr;
+			}
+			
+			private function __val(vkind:int,vindex:int ):String {
+				var val:*;
+				switch (vkind) {
+					case Constant.CONSTANT_Int:
+						val = __int(vindex);
+						break;
+					case Constant.CONSTANT_UInt:
+						val = __uint(vindex);
+						break;
+					case Constant.CONSTANT_Double:
+						val = __double(vindex);
+						break;
+					case Constant.CONSTANT_Utf8:
+						val =  _quoteString(__string(vindex));
+						break;
+					case Constant.CONSTANT_Namespace:
+					case Constant.CONSTANT_PackageNamespace:
+					case Constant.CONSTANT_PackageInternalNs:
+					case Constant.CONSTANT_ProtectedNamespace:
+					case Constant.CONSTANT_ExplicitNamespace:
+					case Constant.CONSTANT_StaticProtectedNs:
+					case Constant.CONSTANT_PrivateNs:
+						val =  __namespaceStr(__namespace(vindex));
+						break;
+					case Constant.CONSTANT_False:
+						val = "false";
+						break;
+					case Constant.CONSTANT_True:
+						val = "true";
+						break;
+				}
+				return val;
+			}
+			
+			private function _quoteString(str:String ):String {
+				if (str == "") {
+					return str;
+				}
+				return '(' + str + ')';
+			}
+			/*map end*/
+			
+			
+			private function gotoGrid(grid:DataGrid, index:int):void {
+				
+				grid.setFocus();
+				grid.setSelectedIndex(index);
+				grid.ensureCellIsVisible(index);
+			}
+			protected function onFocusString(event:MyEvent):void
+			{
+				// TODO Auto-generated method stub
+				trace("onFocusString");
+				var stringIndex:int = int(event.data);
+				var gridIndex:int = stringIndex - 1;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(stringsList, gridIndex);
+			}
+			
+			protected function onFocusNameSpace(event:MyEvent):void
+			{
+				var nsIndex:int = int(event.data);
+				var gridIndex:int = nsIndex - 1;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(namespacesList, gridIndex);
+			}
+			
+			protected function onFocusNameSpaceSet(event:MyEvent):void
+			{
+				var nssetIndex:int = int(event.data);
+				var gridIndex:int = nssetIndex - 1;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(namespacesetList, gridIndex);
+			}
+			
+			protected function onFocusMethod(event:MyEvent):void
+			{
+				// TODO Auto-generated method stub
+				var methodIndex:int = int(event.data);
+				var gridIndex:int = methodIndex ;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(methodsList, gridIndex);
+			}
+			
+			protected function onListTraits(event:MyEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+</s:Group>

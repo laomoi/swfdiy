@@ -1,8 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
-					   xmlns:s="library://ns.adobe.com/flex/spark" 
-					   xmlns:mx="library://ns.adobe.com/flex/mx">
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:local="*"
+					   width="1024" height="768" creationComplete="onInit(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.SWF;
+			import com.swfdiy.data.SWFTag;
+			import com.swfdiy.data.SWFTag.TagDoABC;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
+			
+			[Bindable]
+			[Embed(source="icon.jpg")] 
+			public var iconSymbol1:Class; 
+			
+			[Bindable]
+			private var scriptFiles:Object ;
+			
+			private var swf:SWF;
+			private var abcs:Array;
+			private var swfTags:Array;
+			private var scripts:Array;
+			private var abcPages:Object;
+			
+			private function onInit(e:Event):void {
+				//scriptFiles = new ArrayCollection();
+				//var b:ArrayCollection =  new ArrayCollection();
+				//scriptFiles.addItem({label:"wori", children:[{label:"hei"}]});
+				//scriptFiles.addItem({label:"wori2"});
+				//scriptFiles.addItem(b);
+				
+				abcList.addEventListener('rendererDoubleClick', onItemDoubleClick);
+			}
+			
+			protected function onOpenSWF(event:MouseEvent):void
+			{
+				var allFilter:FileFilter = new FileFilter("swf (*.swf)", "*.swf");
+				
+				Utils.openAndReadFile(_onClickOpen, allFilter);
+			}	
+			
+			private function _onClickOpen(data:Array, files:Array):void {			
+				swf = new SWF(data[0]);
+				abcs = [];
+				scripts = [];
+				swf.startReadTags();	
+				swfTags = [];
+				abcPages = {};
+				
+				while(1) {
+					var start_pos:int = swf.pos;
+					var tag:SWFTag = swf.read_tag() ;
+					
+					if (tag == null) {
+						break;
+					}
+					
+					
+					if (tag is TagDoABC) {
+						var tagDoABC:TagDoABC =  tag as TagDoABC;
+						
+						abcs.push(new ABCWrapper(tagDoABC.abc()));						
+					}
+					
+					swfTags.push(tag);
+				}
+				
+				var i:int;
+				var j:int;
+				
+				scriptFiles = {children:[], label: files[0]};
+				
+				var abcListData:Array = [];
+				for (i=0;i<abcs.length;i++) {
+					var abc:ABCWrapper = abcs[i];
+					abcListData.push({ value: i, label: "ABC" + i});
+					/*for (j=0;j<abc.scripts.length;j++) {
+						var script:ScriptWrapper = abc.scripts[j];
+						var sn:Array = script.getScriptName();
+						if (sn.length <= 0) {
+							continue;
+						}
+						scripts.push(script);
+						addFile(sn, scripts.length-1);
+					}*/
+				}
+				
+				abcList.dataProvider = new ArrayCollection(abcListData);
+				
+			}
+			
+			
+			private function _getChild(name:String, element:Object):Object {
+				var i:int;
+				var list:Array = element.children;
+				for (i=0;i<list.length;i++) {
+					if (list[i].label == name) {
+						return list[i];
+					}
+				}
+				return null;
+			}
+			private function addFile(names:Array, scriptIndex:int):void {
+				var i:int; 
+				var lastNode:Object = scriptFiles;
+				
+				
+				for (i=0;i<names.length;i++) {
+					var n:String = names[i];
+					if (i != names.length -1) {
+						var node:Object = _getChild(n, lastNode);
+						if (node) {
+							lastNode = node;
+						} else {
+							node = {children:[], label: n};
+							lastNode.children.push(node);
+							lastNode = node;
+						}
+					} else {
+						node = {label: n, scriptIndex:scriptIndex, icon:iconSymbol1};
+						lastNode.children.push(node);
+						
+					}
+					
+				}
+			}
+			private function onTreeClick(ev:ListEvent):void {
+				
+				var item:Object =ev.itemRenderer.data;
+				if (item.scriptIndex != null) {
+					// this is script
+					scripts[item.scriptIndex].parse();
+					var content:String= scripts[item.scriptIndex].content();
+					scriptArea.text = content;
+				}
+			}
+			
+			private function treeLabel(item:Object):String {
+				return item.label;
+			}
+			
+			protected function onTest(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function onSaveSWF(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var i:int;
+				var abci:int;
+				for (i=0,abci=0;i<swfTags.length;i++) {
+					if (swfTags[i] is TagDoABC) {
+						var innerabc:ABC = abcs[abci].getABC();
+						if (innerabc.changed) {
+							innerabc.refreshRawData();
+							
+							//refresh the tag
+							TagDoABC(swfTags[i]).refreshRawData();
+						}
+						
+						
+						//if changed
+						//TagDoABC(swfTags[i]).updateAbc(abcs[abci].getABC());
+						
+						//innerabc.refreshRawData();
+						abci++;
+					}
+				}
+				var new_swf_bytes:ByteArray = swf.make_swf_bytes_from_tags(swfTags, true);
+				var f:FileReference = new FileReference;
+				f.save(new_swf_bytes, "new.swf");
+				
+			}
+			
+			protected function onItemDoubleClick(event:MyEvent):void
+			{
+				trace(event.data);
+				var i:int = int(event.data);
+				
+				if (abcPages[i]) {
+					showABCPage(i);
+				} else {
+					var abcPage = new ABCPage();
+					abcPage.init(abcs[i], i);
+					abcPages[i] = abcPage;
+					showABCPage(i);
+				}
+			}
+			
+			private function showABCPage(showIndex:int):void
+			{
+				// TODO Auto Generated method stub
+				for (var i:String in abcPages) {
+					abcPages[i].visible = false;
+				}
+				abcPages[showIndex].visible = true;
+				//abcPages[showIndex].x = 
+				abcPageContainer.addElement(abcPages[showIndex]);
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	<s:Button x="6" y="11" label="openSWF" click="onOpenSWF(event)" height="40" width="85"/>
+	<s:Button x="104" y="10" label="saveSWF" click="onSaveSWF(event)" height="40" width="85"/>
+	<mx:Tree x="10" y="249" id="fileTree" width="179" height="182"  dataProvider="{scriptFiles}" 
+			 labelFunction="treeLabel" itemClick="onTreeClick(event)"></mx:Tree>
+	<s:TextArea x="5" y="440" width="172" height="69" id="scriptArea" fontFamily="Courier New"/>
+	<s:Button x="96" y="563" label="test" click="onTest(event)"/>
+	<s:List id="abcList" x="6" y="59" width="183" height="167"  >
+		<s:itemRenderer>
+			<fx:Component>
+				<s:ItemRenderer doubleClick="handleDoubleClick()" doubleClickEnabled="true">
+					<fx:Script>
+						<![CDATA[
+							import spark.components.List;
+							private function handleDoubleClick():void {
+								var e:MyEvent = new MyEvent("rendererDoubleClick");
+								e.data = data.value;
+								owner.dispatchEvent(e);
+							}
+						]]>
+					</fx:Script>
+					<s:Label text="{data.label}" top="5" bottom="5" right="3" left="3" />
+				</s:ItemRenderer>
+			</fx:Component>
+		</s:itemRenderer>
+	
+	</s:List>
+	<s:Group id="abcPageContainer" x="197" y="10" width="817" height="748">
+	</s:Group>
 </s:WindowedApplication>

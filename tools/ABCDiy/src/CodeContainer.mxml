@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="552" height="452">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import flashx.textLayout.elements.DivElement;
+			import flashx.textLayout.elements.TextFlow;
+			
+			import spark.components.Label;
+			
+			
+			public function addText():void {
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:VGroup id="group" x="113" y="59" width="287" height="312">
+	</s:VGroup>
+	
+	
+</s:Group>
