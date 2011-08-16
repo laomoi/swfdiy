@@ -156,6 +156,7 @@ package com.swfdiy.data
 				} else if (tags[i] is SWFTag) {
 					tag_bytes.writeBytes(tags[i].tagData());
 				}
+				
 			}
 			
 			//update header length

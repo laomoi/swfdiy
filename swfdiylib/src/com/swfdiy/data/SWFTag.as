@@ -25,6 +25,8 @@ package com.swfdiy.data
 			return _stream.rawdata;
 		}
 		
+	
+		
 		public function tagData():ByteArray {
 			var len:int = this.length;
 			var ba:ByteArray = new ByteArray();

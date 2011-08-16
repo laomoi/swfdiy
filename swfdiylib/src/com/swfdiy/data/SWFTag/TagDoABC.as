@@ -16,7 +16,7 @@ package com.swfdiy.data.SWFTag
 		private var _Name :String;
 		private var _abc:ABC;
 		
-		private var _abc_start_pos:int;
+		private var _data_start_pos:int;
 		override public function set data(byteStream:SWFStream):void {
 			_stream = byteStream;
 			_stream.pos = 0;
@@ -24,7 +24,7 @@ package com.swfdiy.data.SWFTag
 			_Flags = _stream.read_UI32();
 			_Name = _stream.read_string();
 			
-			_abc_start_pos = _stream.pos;
+			_data_start_pos = _stream.pos;
 			
 			_abc = new ABC();
 			var _abcStream:SWFStream = _stream.read_bytes(_stream.bytesAvailable);
@@ -44,10 +44,17 @@ package com.swfdiy.data.SWFTag
 			return _abc;
 		}
 		
-		public function updateAbc(abc:ABC):void {
-			_stream.pos = _abc_start_pos;
-			_stream.rawdata.writeBytes(abc.data.rawdata);
+		/*public function updateAbc(abc:ABC):void {
 			_abc = abc;
+			_stream.pos = _data_start_pos;
+			_stream.rawdata.writeBytes(abc.data.rawdata);
+			
+		}*/
+		
+		public  function refreshRawData():void
+		{
+			_stream.pos = _data_start_pos;
+			_stream.rawdata.writeBytes(_abc.data.rawdata);
 		}
 		
 		public function get_abc_bytes():ByteArray {
@@ -68,6 +75,7 @@ package com.swfdiy.data.SWFTag
 			_unknownType = false;
 			_id = ID;
 		}
+		
 		
 	}
 }

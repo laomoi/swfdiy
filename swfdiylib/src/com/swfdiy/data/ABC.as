@@ -40,7 +40,7 @@ package com.swfdiy.data
 		public var method_bodys:Array;
 		
 		
-		
+		public var changed:Boolean = false;
 		
 		public function ABC()
 		{
@@ -101,6 +101,14 @@ package com.swfdiy.data
 			
 		}
 		
+		public function refreshRawData():void {
+			var ba:ByteArray = new ByteArray;
+			this.dumpRawData(ba);
+			this._stream = new ABCStream(ba);
+			
+			changed = false;
+		}
+
 		
 		public function dumpRawData(n:ByteArray):void {
 		
