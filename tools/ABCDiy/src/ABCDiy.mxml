@@ -513,6 +513,7 @@
 	<s:Group id="abcPageContainer" x="0" y="0" width="1024" height="10" >
 	
 	</s:Group>
-	<s:Button x="665" y="718" label="testPNG" click="onTestPNG(event)" height="40" width="85"/>
-	<s:Button x="773" y="718" label="packPNG" click="onTestPNG2(event)" height="40" width="85"/>
+	<s:Button x="665" y="718" label="testPNG" click="onTestPNG(event)" height="40" width="85" visible="false"/>
+	<s:Button x="773" y="718" label="packPNG" click="onTestPNG2(event)" height="40" width="85"  visible="false"/>
+	<s:Label x="6" y="750" text="made by ldx@swfdiy.com www.swfdiy.com"/>
 </s:WindowedApplication>
