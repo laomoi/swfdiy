@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx" width="306" height="160" minHeight="320" minWidth="630"
+	skinClass="flex.utils.spark.resize.ResizableDraggableTitleWindowSkin"
+	title="Add String" creationComplete="init()">
+	
+	<fx:Script>
+		<![CDATA[
+			public var abcPage:ABCPage;
+			public function init() {
+				this.closeButton.addEventListener(MouseEvent.CLICK, onClose, false, 0, true);
+			}
+			protected function onOK(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub\
+				if (txtValue.text == "") {
+					return;
+				}
+				abcPage.onAddString({value: txtValue.text});
+				onClose(null);
+			}
+			
+			protected function onClose(event:MouseEvent):void
+			{
+				
+				this.visible = false;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button x="208" y="64" width="86" height="31" label="OK" click="onOK(event)"/>
+	<s:Label x="8" y="27" width="41" text="value"/>
+	<s:TextInput id="txtValue" x="73" y="22" width="221"/>
+</s:TitleWindow>

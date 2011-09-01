@@ -2,221 +2,277 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:ns1="*"
-		 width="900" height="700">
+		 xmlns:local="*"
+		 width="1024" height="768">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Label x="12" y="6" text="int"/>
-	<s:Label x="134" y="7" text="unit"/>
-	<s:Label x="251" y="7" width="39" text="double" />
-	<s:Label x="374" y="5" text="string"/>
-	<s:Label x="378" y="157" text="multiname"/>
-	<s:Label x="13" y="158" text="namespace"/>
-	<s:Label x="10" y="312" text="class"/>
-	<s:Label x="12" y="463" text="scripts"/>
-	<s:Label x="545" y="311" text="methods"/>
-	<s:Label x="225" y="463" text="traits&#xd;"/>
-	<s:Label x="258" y="157" text="ns_set"/>
-	<s:DataGrid id="multinamesList" x="377" y="174" width="350" height="129" editable="true"
+	<s:Label x="12" y="5" fontFamily="Arial" text="int"/>
+	<s:Label x="134" y="5" fontFamily="Arial" text="unit"/>
+	<s:Label x="251" y="5" width="39" fontFamily="Arial" text="double"/>
+	<s:Label x="374" y="5" fontFamily="Arial" text="string"/>
+	<s:Label x="9" y="132" text="multiname"/>
+	<s:Label x="653" y="5" fontFamily="Arial" text="namespace"/>
+	<s:Label x="213" y="282" text="class"/>
+	<s:Label x="11" y="282" text="scripts"/>
+	<s:Label x="11" y="444" text="methods"/>
+	<s:Label x="380" y="138" text="traits"/>
+	<s:Label x="900" y="5" fontFamily="Arial" text="ns_set"/>
+	<s:DataGrid id="multinamesList" x="8" y="149" width="350" height="129" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn width="75" dataField="dataKind" editable="false" headerText="kind"
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn width="75" dataField="dataKind" editable="false" headerText="kind"
 							  resizable="true" sortable="false">
 			
 				
-				</s:GridColumn>
-				<s:GridColumn width="100" dataField="dataName" editable="false" headerText="name"
-							  sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+				</local:CustomGridColumn>
+				<local:CustomGridColumn width="100" dataField="dataName" editable="false" headerText="name"
+				  sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
 				
 				
-				</s:GridColumn>
-				<s:GridColumn width="60" dataField="dataNameSpace" editable="false" headerText="ns"
-							  sortable="false" itemRenderer="renderer.NameSpaceForwardItemRenderer"></s:GridColumn>
-				<s:GridColumn dataField="dataNameSpaceSet" editable="false" headerText="ns_set"
-							  sortable="false" itemRenderer="renderer.NameSpaceSetForwardItemRenderer"></s:GridColumn>
+				</local:CustomGridColumn>
+				<local:CustomGridColumn width="60" dataField="dataNameSpace" editable="false" headerText="ns"
+						sortable="false" 
+					itemRenderer="renderer.NameForwardItemRenderer"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataNameSpaceSet" editable="false" headerText="ns_set"
+									
+										sortable="false" itemRenderer="renderer.NameForwardItemRenderer"></local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="namespacesList" x="13" y="174" width="232" height="129" editable="true"
+	<s:DataGrid id="namespacesList" x="653" y="21" width="232" height="108" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn width="75" dataField="dataKind" editable="false" headerText="kind"
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn width="75" dataField="dataKind" editable="false" headerText="kind"
 							  resizable="true" sortable="false">
 			
 				
-				</s:GridColumn>
-				<s:GridColumn dataField="dataName" editable="false" headerText="name"
-							  sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+				</local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataName" editable="false" headerText="name"
+											  sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
 				
 					
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="doublesList" x="247" y="19" width="119" height="132" editable="true"
+	<s:DataGrid id="doublesList" x="247" y="19" width="119" height="108" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataValue" headerText="Value" resizable="true"
 							  sortable="false" itemEditor="editor.NumberEditor">
 				
 				
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="uintsList" x="130" y="20" width="113" height="131" editable="true"
+	<s:DataGrid id="uintsList" x="130" y="20" width="113" height="107" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataValue" headerText="Value" resizable="true"
 							  sortable="false" itemEditor="editor.UintEditor">
 				
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="stringsList" x="374" y="17" width="267" height="132" editable="true"
+	<s:DataGrid id="stringsList" x="373" y="19" width="267" height="110" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataValue" headerText="Value" resizable="true"
 							  sortable="false" itemEditor="editor.StringEditor">
 				
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:Button x="480" y="496" label="Apply" click="onApply(event)"/>
-	<s:DataGrid id="intsList" x="10" y="21" width="117" height="130" editable="true"
+	<s:Button x="944" y="421" height="38" label="Apply" click="onApply(event)"/>
+	<s:DataGrid id="intsList" x="10" y="21" width="117" height="106" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataValue" headerText="Value" resizable="true"
 							  sortable="false"  itemEditor="editor.IntEditor">
 				
 					
 				
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid x="599" y="479" width="168" height="67" requestedRowCount="4">
-		<s:columns>
-			<s:ArrayList>
-				<s:GridColumn width="50" dataField="dataAddr" headerText="addr" resizable="true"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn width="90" dataField="dataBinary" headerText="binary" sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataMemo" headerText="memo"></s:GridColumn>
-			</s:ArrayList>
-		</s:columns>
-	
-	</s:DataGrid>
-	<s:DataGrid id="methodsList" x="543" y="331" width="274" height="118" editable="true"
+	<s:DataGrid id="methodsList" x="11" y="464" width="925" height="213" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataName" editable="false" headerText="Name"
-							  resizable="true" sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false" ></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataName" editable="false" headerText="Name"
+				  	  resizable="true" sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
 			
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataReturn" editable="false" headerText="return_type"
+							  sortable="false"  itemRenderer="renderer.NameForwardItemRenderer"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataParams" editable="false" headerText="params"
+							  sortable="false"  itemRenderer="renderer.NameForwardItemRenderer"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataFlags" editable="false" headerText="flags"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataBody" forwardEvent="list_body"	valueField="dataBody" 
+					editable="false" resizable="true" sortable="false" itemRenderer="renderer.ListForwardItemRenderer"></local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:Label id="methodLabel" x="558" y="561" width="135" height="18"/>
-	<s:DataGrid id="namespacesetList" x="253" y="174" width="119" height="129" editable="true"
+	<s:DataGrid id="namespacesetList" x="895" y="23" width="119" height="103" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="40" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataValue" headerText="Value" resizable="true"
-							  sortable="false" editable="false">
+				<local:CustomGridColumn width="30" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataName" headerText="Value" resizable="true"
+							  sortable="false" editable="false" itemRenderer="renderer.NameForwardItemRenderer">
 				
 					
 				
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="classesList" x="10" y="333" width="206" height="112" editable="true"
+	<s:DataGrid id="classesList" x="213" y="301" width="193" height="79" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataMethod" editable="false" headerText="cinit"
-							  sortable="false"
-							  itemRenderer="renderer.MethodForwardItemRenderer"
-							  ></s:GridColumn>
-				<s:GridColumn dataField="dataTraitsCount" editable="false" headerText="traits"
-							  resizable="true" sortable="false" itemRenderer="renderer.TraitsListItemRenderer">
+				<local:CustomGridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataMethod" editable="false" headerText="cinit"
+										sortable="false" itemRenderer="renderer.NameForwardItemRenderer"
+							  ></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataTraitsCount" editable="false" headerText="traits"
+										forwardEvent="list_traits"	valueField="dataTraits" 
+										resizable="true" sortable="false" itemRenderer="renderer.ListForwardItemRenderer">
 			
 				
-				</s:GridColumn>
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="instancesList" x="221" y="333" width="314" height="112" editable="true"
+	<s:DataGrid id="instancesList" x="412" y="300" width="606" height="79" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataFlags" editable="false" headerText="flags"
-							  sortable="false"></s:GridColumn>
-				<s:GridColumn dataField="dataName" editable="false" headerText="Name"
-							  resizable="true" sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+				<local:CustomGridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataFlags" editable="false" headerText="flags"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataName" editable="false" headerText="Name"
+										
+										resizable="true" sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
 			
 				
-				</s:GridColumn>
-				<s:GridColumn dataField="dataExtends" editable="false" headerText="extends"
-							  sortable="false"></s:GridColumn>
+				</local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataExtends" editable="false" headerText="extends"
+							  sortable="false" 
+							  itemRenderer="renderer.NameForwardItemRenderer"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataImplements" editable="false" headerText="implements"
+										itemRenderer="renderer.NameForwardItemRenderer"
+							sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataMethod" editable="false" headerText="init"
+										sortable="false" itemRenderer="renderer.NameForwardItemRenderer"></local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:Label x="228" y="312" text="instance"/>
+	<s:Label x="416" y="280" text="instance"/>
+	<s:DataGrid id="scriptsList" x="7" y="302" width="202" height="79" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<local:CustomGridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataMethod" editable="false" headerText="init"
+										sortable="false" itemRenderer="renderer.NameForwardItemRenderer"
+							  ></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataTraitsCount" editable="false" headerText="traits"
+										forwardEvent="list_traits"	valueField="dataTraits" 
+										resizable="true" sortable="false" itemRenderer="renderer.ListForwardItemRenderer">
+			
+				
+				</local:CustomGridColumn>
+			</s:ArrayList>
+		</s:columns>
 	
+	</s:DataGrid>
+	<s:DataGrid id="traitsList" x="382" y="153" width="623" height="125" editable="true"
+				requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<local:CustomGridColumn width="50" dataField="dataIndex" editable="false" headerText="i"
+							  sortable="false"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataName" editable="false" headerText="Name"
+				 	  resizable="true" sortable="false" itemRenderer="renderer.NameForwardItemRenderer">
+			
+				
+				</local:CustomGridColumn>
+				<s:GridColumn dataField="dataKind" editable="false" headerText="kind"
+							  sortable="false"></s:GridColumn>
+				
+				<s:GridColumn dataField="dataData" editable="false" headerText="data"
+							  resizable="true" sortable="false" itemRenderer="renderer.TraitDataItemRenderer"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
 	
+	</s:DataGrid>
+	<s:Button x="944" y="497" height="43" label="close" click="onClose(event)"/>
+	<s:Button x="83" y="130" width="16" height="16" chromeColor="#CCCCCC" click="onClickAddMultiname(event)"
+			  cornerRadius="0" icon="@Embed('assets/jia.png')"/>
+	<s:Button x="414" y="2" width="16" height="16" chromeColor="#CCCCCC" click="onClickAddSting(event)"
+			  cornerRadius="0" icon="@Embed('assets/jia.jpg')"/>
+	<s:Button x="727" y="2" width="16" height="16" chromeColor="#CCCCCC" click="onClickAddNamespace(event)"
+			  cornerRadius="0" icon="@Embed('assets/jia.jpg')"/>
+	<local:AddStringView id="add_string_view" x="252" y="132" visible="false">
+	</local:AddStringView>
+	<local:AddNamespaceView id="add_namespace_view" x="252" y="132" visible="false">
+	</local:AddNamespaceView>
+	<local:AddMulltinameView id="add_multiname_view" x="252" y="132" visible="false">
+	</local:AddMulltinameView>
 	<fx:Script>
 		<![CDATA[
 			import com.swfdiy.data.ABC;
 			import com.swfdiy.data.ABC.ClassInfo;
 			import com.swfdiy.data.ABC.Constant;
+			import com.swfdiy.data.ABC.InstanceInfo;
 			import com.swfdiy.data.ABC.MMultiname;
 			import com.swfdiy.data.ABC.MNamespace;
 			import com.swfdiy.data.ABC.MQName;
@@ -226,6 +282,9 @@
 			import com.swfdiy.data.ABC.Multiname;
 			import com.swfdiy.data.ABC.NamespaceSet;
 			import com.swfdiy.data.ABC.RTQName;
+			import com.swfdiy.data.ABC.ScriptInfo;
+			import com.swfdiy.data.ABC.Trait;
+			import com.swfdiy.data.ABC.TraitSlot;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
@@ -235,8 +294,7 @@
 			private var _abcIndex:int;
 			private var _abc:ABC;
 			
-			
-			
+			private var codeContainers:Object = {};
 			
 			
 			public function init(abcWrapper:ABCWrapper, index:int):void {
@@ -245,11 +303,17 @@
 				_abc = _abcWrapper.getABC();
 				this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreated);
 				
+				this.addEventListener("focus_uint", onFocusUInt);
+				this.addEventListener("focus_int", onFocusInt);
+				this.addEventListener("focus_double", onFocusDouble);
 				this.addEventListener("focus_string", onFocusString);
 				this.addEventListener("focus_namespace", onFocusNameSpace);
 				this.addEventListener("focus_namespaceset", onFocusNameSpaceSet);
 				this.addEventListener("focus_method", onFocusMethod);
+				this.addEventListener("focus_multiname", onFocusMultiname);
+				this.addEventListener("focus_class", onFocusClass);
 				this.addEventListener("list_traits", onListTraits);
+				this.addEventListener("list_body", onListBody);
 			}
 			
 			
@@ -257,6 +321,8 @@
 			protected function onCreated(event:FlexEvent):void
 			{
 				// TODO Auto-generated method stub
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onCreated);
+
 				var i:int;
 				var l:Array = [];
 				var src:Array = _abc.constant_pool.ints;
@@ -298,12 +364,13 @@
 					var ns:MNamespace = MNamespace(src[i]);
 					l.push({
 						dataIndex: i, 
-						dataKind:  ns.kind + " " + _quoteString( Constant.toStr(ns.kind   )  ) ,
-						dataName:  ns.name + " " + _quoteString( __string( ns.name   )  ) ,
-						dataNameIndex: ns.name 
+						dataKind:  ns.kind + " " + Utils.quoteString( Constant.toStr(ns.kind   )  ) ,
+						dataName:  Utils.getLinkEventText("focus_string", ns.name, __string( ns.name   ) )
 					
 					});
 				}
+				
+				
 				namespacesList.dataProvider = new ArrayCollection(l);
 				
 				
@@ -311,10 +378,16 @@
 				src = _abc.constant_pool.ns_sets;
 				for (i=1;i<src.length;i++) {
 					var ns_set:NamespaceSet = NamespaceSet(src[i]);
-					l.push({
+					var obj:Object = {
 						dataIndex: i, 
-						dataValue: ns_set.ns.join(",")
-					});
+						dataName: null
+					};
+					if (ns_set.ns && ns_set.ns.length>0) {
+						obj['dataName'] = Utils.getLinkEventText("focus_namespace", ns_set.ns[0], ns_set.ns.join(","), true );
+					}
+					
+					
+					l.push(obj);
 				}
 				namespacesetList.dataProvider = new ArrayCollection(l);
 				
@@ -325,31 +398,23 @@
 					var mul:Multiname = Multiname(src[i]);
 					var obj:Object = {
 						dataIndex: i, 
-						dataKind:mul.kind + " " + _quoteString( Constant.toStr(mul.kind   )  ) ,
-						dataName: "",
-						dataNameIndex: "",
-						dataNameSpaceIndex:"",
-						dataNameSpace:"",
-						dataNameSpaceSetIndex:"",
-						dataNameSpaceSet:""
+						dataKind:mul.kind + " " + Utils.quoteString( Constant.toStr(mul.kind   )  ) ,
+						dataName: null,
+						dataNameSpace:null,
+						dataNameSpaceSet:null
 					};
 					
 					if ( mul.data is MQName) {
-						obj['dataNameSpace'] = MQName(mul.data).ns;
-						obj['dataNameSpaceIndex'] = MQName(mul.data).ns;
-						obj['dataName'] = MQName(mul.data).name + " " + _quoteString( __string(mul.data.name) );
-						obj['dataNameIndex'] = MQName(mul.data).name;
+						obj['dataNameSpace'] = Utils.getLinkEventText("focus_namespace", MQName(mul.data).ns,  mul.data.ns );
+						obj['dataName'] = Utils.getLinkEventText("focus_string", MQName(mul.data).name,  __string(mul.data.name) );
 					} else if (mul.data is RTQName) {
-						obj['dataName'] = RTQName(mul.data).name + " " + _quoteString( __string(mul.data.name) );
-						obj['dataNameIndex'] = RTQName(mul.data).name;
+						obj['dataName'] = Utils.getLinkEventText("focus_string", RTQName(mul.data).name,  __string(mul.data.name) );
 					} else if (mul.data is MMultiname) {
-						obj['dataNameSpaceSet'] = MMultiname(mul.data).ns_set;
-						obj['dataNameSpaceSetIndex'] = MMultiname(mul.data).ns_set;
-						obj['dataName'] = MMultiname(mul.data).name + " " + _quoteString( __string(mul.data.name) );
-						obj['dataNameIndex'] = MMultiname(mul.data).name;
+						obj['dataNameSpaceSet'] = Utils.getLinkEventText("focus_namespaceset", MMultiname(mul.data).ns_set,  mul.data.ns_set );
+						obj['dataName'] = Utils.getLinkEventText("focus_string", MMultiname(mul.data).name,  __string(mul.data.name) );
+							
 					} else if (mul.data is MTypeName) {
-						obj['dataName'] = MTypeName(mul.data).name + " " + _quoteString( __string(mul.data.name) );
-						obj['dataNameIndex'] = MTypeName(mul.data).name;
+						obj['dataName'] = Utils.getLinkEventText("focus_string", MTypeName(mul.data).name,  __string(mul.data.name) );
 					}
 					
 					l.push(obj);
@@ -361,9 +426,127 @@
 				l = [];
 				src = _abc.methods;
 				for (i=0;i<src.length;i++) {
-					l.push({dataIndex: i, dataNameIndex:src[i].name ,dataName:src[i].name + " " + _quoteString(__string(src[i].name) )});
+					var method:MethodInfo = MethodInfo(src[i]);
+					var obj:Object ={
+						dataIndex: i, 
+						dataName:Utils.getLinkEventText("focus_string", src[i].name,  __string(method.name)  ),
+						dataReturn:null,
+						dataParams:null,
+						dataFlags:null,
+						dataBody: null
+					};
+					obj['dataReturn'] = Utils.getLinkEventText("focus_multiname", method.return_type,  __multiname_name(method.return_type)  );
+					
+					
+					obj['dataFlags'] = method.flags ;
+					var params_sr:String = "";
+					
+					var params:Array = [];
+					var j:int;
+					var param:String = "";
+					var options:Array =[];
+					if (method.option_count) {
+						options = method.option_info.option_details;
+					}
+					
+					for (j=0;j<method.param_count;j++) {
+						param = "";
+						if (method.param_names.length) {
+							param += Utils.getSimpleLinkEventText("focus_string", method.param_names[j],  __string(method.param_names[j])  );		
+								
+						}
+						
+						param += ":" + 
+							Utils.getSimpleLinkEventText("focus_multiname", method.param_type[j],  __multiname_name(method.param_type[j])  );	
+						if (options.length && options[j] != null) {
+							var val:* = __linkval(options[j].kind, options[j].val, true);
+							param += "=" + val;
+						}
+						params.push(param);
+					}
+					params_sr += params.join(",");
+					obj['dataParams'] = params_sr ;
+			
+					//reverse search the mthod body of the method info
+					for (j=0;j<_abc.method_bodys.length;j++) {
+						if (MethodBody(_abc.method_bodys[j]).method == i) {
+							//bingo
+							obj['dataBody'] = j;
+							break;
+						}
+					}
+					
+					
+					
+					l.push(obj);
 				}
 				methodsList.dataProvider = new ArrayCollection(l);
+				
+				
+				//instances
+				l = [];
+				src = _abc.instances;
+				for (i=0;i<src.length;i++) {
+					var inst:InstanceInfo = InstanceInfo(src[i]);
+					var obj:Object = {
+						dataIndex: i, 
+						dataMethodIndex: inst.iint,
+						dataMethod: Utils.getLinkEventText("focus_method", inst.iint, __string(  __method(inst.iint).name   ) ),
+						dataExtends: null,
+						dataExtendsIndex: null,
+						dataImplements: null,
+						dataImplementsIndex: null,
+						dataFlags:null,
+						dataTraits:null,
+						dataTraitsCount:null,
+						dataName: Utils.getLinkEventText("focus_multiname", inst.name, __multiname_name( inst.name   ) )
+					};
+					
+					var flags:Array = [];
+					if (!(inst.flags & Constant.CONSTANT_ClassSealed)) {
+						flags.push('dynamic');
+					}
+					
+					if (inst.flags & Constant.CONSTANT_ClassFinal) {
+						flags.push('final');
+					}
+					
+					
+					if (inst.flags & Constant.CONSTANT_ClassInterface) {
+						flags.push('interface');	
+						
+					}  else {
+						flags.push('class');	
+					}	
+					
+					//implements
+					if (inst.intrf_count) {
+						var intrfnames:Array = [];
+						for (var j:int=0;j<inst.interfaces.length;j++) {
+							intrfnames.push(__multiname_name( inst.interfaces[j]));
+						}
+						obj['dataImplements'] = Utils.getLinkEventText("focus_multiname",inst.interfaces[0],inst.interfaces.join(",") + " " + Utils.quoteString(intrfnames.join(",")),true )
+						
+					}
+					
+					
+					//extends
+					if (inst.super_name) {
+						obj['dataExtends'] = Utils.getLinkEventText("focus_multiname", inst.super_name, __multiname_name( inst.super_name   ) );
+						
+					}
+					
+					
+					
+					obj['dataFlags'] = flags.join("/");
+					
+					if ( inst.trait_count) {
+						obj['dataTraits'] = inst.traits;
+						obj['dataTraitsCount'] = "count:" + inst.trait_count;
+					} 
+					l.push(obj);
+				}
+				instancesList.dataProvider = new ArrayCollection(l);
 				
 				//classes
 				l = [];
@@ -373,10 +556,12 @@
 					var obj:Object = {
 						dataIndex: i, 
 						dataMethodIndex: cl.cinit,
-						dataMethod: cl.cinit+ " " + _quoteString( __string(  __method(cl.cinit).name   )  ) ,
-						dataTraits:"",
-						dataTraitsCount:""
+						dataMethod: Utils.getLinkEventText("focus_method", cl.cinit, __string(  __method(cl.cinit).name   ) ) ,
+						dataTraits:null,
+						dataTraitsCount:null
 					};
+					
+					
 					
 					if ( cl.trait_count) {
 						obj['dataTraits'] = cl.traits;
@@ -386,6 +571,25 @@
 				}
 				classesList.dataProvider = new ArrayCollection(l);
 				
+				
+				//scripts
+				l = [];
+				src = _abc.scripts;
+				for (i=0;i<src.length;i++) {
+					var script:ScriptInfo = ScriptInfo(src[i]);
+					var obj:Object = {
+						dataIndex: i, 
+						dataMethod: Utils.getLinkEventText("focus_method", script.init, __string(  __method(script.init).name   )  )
+						
+					};
+					
+					if ( script.trait_count) {
+						obj['dataTraits'] = script.traits;
+						obj['dataTraitsCount'] = "count:" + script.trait_count;
+					} 
+					l.push(obj);
+				}
+				scriptsList.dataProvider = new ArrayCollection(l);
 				
 				
 				
@@ -441,10 +645,10 @@
 			
 			/*maps*/		
 			
-			private function __multiname(index:int):Multiname {
+			public function __multiname(index:int):Multiname {
 				return _abc.constant_pool.multinames[index];
 			}
-			private function __multiname_name(index:int):String {
+			public function __multiname_name(index:int):String {
 				var mm:Multiname = __multiname(index);
 				if (mm == null) {
 					return "*";
@@ -452,32 +656,32 @@
 				return __string(mm.data.name);
 			}
 			
-			private function __string(index:int):String {
+			public function __string(index:int):String {
 				return _abc.constant_pool.strings[index];
 			}
-			private function __int(index:int):int {
+			public function __int(index:int):int {
 				return _abc.constant_pool.ints[index];
 			}
-			private function __uint(index:int):uint {
+			public function __uint(index:int):uint {
 				return _abc.constant_pool.uints[index];
 			}
-			private function __double(index:int):Number {
+			public function __double(index:int):Number {
 				return _abc.constant_pool.doubles[index];
 			}
-			private function __namespace(index:int):MNamespace {
+			public function __namespace(index:int):MNamespace {
 				return _abc.constant_pool.namespaces[index];
 			}
 			
-			private function __nsset(index:int):NamespaceSet {
+			public function __nsset(index:int):NamespaceSet {
 				return _abc.constant_pool.ns_sets[index];
 			}
-			private function __method(index:int):MethodInfo {
+			public function __method(index:int):MethodInfo {
 				return _abc.methods[index];
 			}
-			private function __method_body(index:int):MethodBody {
+			public function __method_body(index:int):MethodBody {
 				return _abc.method_bodys[index];
 			}
-			private function __namespaceStr(ns:MNamespace):String {
+			public function __namespaceStr(ns:MNamespace):String {
 				var nsStr:String = "";
 				switch (ns.kind ) {
 					case Constant.CONSTANT_Namespace:
@@ -509,7 +713,7 @@
 				return nsStr;
 			}
 			
-			private function __val(vkind:int,vindex:int ):String {
+			public function __val(vkind:int,vindex:int):String {
 				var val:*;
 				switch (vkind) {
 					case Constant.CONSTANT_Int:
@@ -522,7 +726,7 @@
 						val = __double(vindex);
 						break;
 					case Constant.CONSTANT_Utf8:
-						val =  _quoteString(__string(vindex));
+						val =  __string(vindex);
 						break;
 					case Constant.CONSTANT_Namespace:
 					case Constant.CONSTANT_PackageNamespace:
@@ -543,12 +747,92 @@
 				return val;
 			}
 			
-			private function _quoteString(str:String ):String {
-				if (str == "") {
-					return str;
+			public function __linkval(vkind:int,vindex:int, simple:Boolean=false ):String {
+				var val:* = __val(vkind, vindex);
+				switch (vkind) {
+					case Constant.CONSTANT_Int:
+						val = Utils.getLinkEventText("focus_int", vindex, val, simple);
+						break;
+					case Constant.CONSTANT_UInt:
+						val = Utils.getLinkEventText("focus_uint", vindex, val, simple);
+						break;
+					case Constant.CONSTANT_Double:
+						val = Utils.getLinkEventText("focus_double", vindex, val, simple);
+						break;
+					case Constant.CONSTANT_Utf8:
+						val = Utils.getLinkEventText("focus_string", vindex, val, simple);
+						break;
+					case Constant.CONSTANT_Namespace:
+					case Constant.CONSTANT_PackageNamespace:
+					case Constant.CONSTANT_PackageInternalNs:
+					case Constant.CONSTANT_ProtectedNamespace:
+					case Constant.CONSTANT_ExplicitNamespace:
+					case Constant.CONSTANT_StaticProtectedNs:
+					case Constant.CONSTANT_PrivateNs:
+						val = Utils.getLinkEventText("focus_+namespace", vindex, val, simple);
+						break;
+					case Constant.CONSTANT_False:
+						break;
+					case Constant.CONSTANT_True:
+						break;
 				}
-				return '(' + str + ')';
+				return val;
 			}
+			
+			
+			public function get_trait_slot_str(t:Trait, ts:TraitSlot):String {
+				/*
+				public/internal/private/protected static var/const xxx:XXX = xxxx
+				*/
+				var def:String =  "";
+				
+				if (t.kind == Trait.Trait_Const) {
+					def += "const ";
+				} else {
+					def += "var ";
+				}
+				def +=  ":" + __multiname_name(ts.type_name);
+				
+				if (ts.vindex) {
+					var val:* = __val(ts.vkind, ts.vindex);
+					
+					def += "=" + val;
+				}
+				
+				return def;
+			}
+			
+			public function getLinkText(type:String, indexVal:int):String {
+				var event_str:String = "";
+				var val:String;
+				if (type == "string") {
+					event_str = "focus_string";
+					val = String(__string(indexVal));
+				} else if (type == "int") {
+					event_str = "focus_int";
+					val = String(__int(indexVal));
+				} else if (type == "unit") {
+					event_str = "focus_unit";
+					val = String(__uint(indexVal));
+				} else if (type == "double") {
+					event_str = "focus_double";
+					val = String(__double(indexVal));
+				} else if (type == "namespace") {
+					event_str = "focus_namespace";
+					val = String(indexVal);
+				} else if (type == "class") {
+					event_str = "focus_class";
+					val = String(indexVal);
+				} else if (type == "ns_set") {
+					event_str = "focus_namespaceset";
+					val = String(indexVal);
+				} else if (type == "multiname") {
+					event_str = "focus_multiname";
+					val = __multiname_name(indexVal);
+				}
+				return Utils.getSimpleLinkEventText(event_str,  indexVal, val);
+			}
+		
 			/*map end*/
 			
 			
@@ -568,6 +852,41 @@
 					return;
 				}
 				gotoGrid(stringsList, gridIndex);
+			}
+			
+			
+			
+			protected function onFocusUInt(event:MyEvent):void
+			{
+				// TODO Auto-generated method stub
+				var index:int = int(event.data);
+				var gridIndex:int = index - 1;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(uintsList, gridIndex);
+			}
+			
+			protected function onFocusInt(event:MyEvent):void
+			{
+				var index:int = int(event.data);
+				var gridIndex:int = index - 1;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(intsList, gridIndex);
+				
+			}
+			
+			protected function onFocusDouble(event:MyEvent):void
+			{
+				var index:int = int(event.data);
+				var gridIndex:int = index - 1;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(doublesList, gridIndex);
+				
 			}
 			
 			protected function onFocusNameSpace(event:MyEvent):void
@@ -601,10 +920,159 @@
 				gotoGrid(methodsList, gridIndex);
 			}
 			
+			
+			protected function onFocusClass(event:MyEvent):void
+			{
+				var classIndex:int = int(event.data);
+				var gridIndex:int = classIndex ;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(classesList, gridIndex);
+				
+			}
 			protected function onListTraits(event:MyEvent):void
 			{
 				// TODO Auto-generated method stub
+				var traits:Array = event.data as Array;
+				var i:int;
+				var l:Array = [];
+				for (i=0;i<traits.length;i++) {
+					var t:Trait = Trait(traits[i]);
+					l.push({
+						dataIndex: i, 
+						dataName:  t.name + " " + Utils.quoteString( __multiname_name( t.name   )  ) ,
+						dataNameIndex: t.name ,
+						dataKind: t.kindStr(),
+						traitdata: t.data,
+						trait:t
+					});
+				}
+				traitsList.dataProvider = new ArrayCollection(l);
+			}
+			
+			protected function onFocusMultiname(event:MyEvent):void
+			{
+				var multinameIndex:int = int(event.data);
+				var gridIndex:int = multinameIndex - 1;
+				if (gridIndex < 0) {
+					return;
+				}
+				gotoGrid(multinamesList, gridIndex);
+			}
+			
+			
+			
+		
+			
+			protected function onClose(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.visible = false;
+				this.parentApplication.dispatchEvent(new MyEvent("close_abcpage"));
+			}
+			
+			
+			protected function onListBody(event:MyEvent):void
+			{
+				// TODO Auto-generated method stub
+				var bodyIndex:int = int(event.data);
+				trace("body" + bodyIndex);
 				
+				if (codeContainers[bodyIndex]) {
+					showContainerPage(bodyIndex);
+				} else {
+					var codePage:CodeContainer = new CodeContainer();
+					codePage.init(_abc, bodyIndex);
+					codeContainers[bodyIndex] = codePage;
+					codePage.top= 150 + (bodyIndex % 10)*20;
+					codePage.left = 150 + (bodyIndex % 10)*20;
+					showContainerPage(bodyIndex);
+				}
+				
+			}
+			private function showContainerPage(i:int):void {
+				var codePage:CodeContainer = CodeContainer(codeContainers[i] );
+				codePage.refresh();
+
+				codePage.visible = true;
+				this.addElement(codePage);
+			}
+			
+			public function onAddString(obj:Object):void {
+				var str:String = obj['value'];
+			
+				stringsList.dataProvider.addItem({dataIndex: stringsList.dataProvider.length+1,  dataValue: str  });
+				
+			}
+			
+			private function onClickAddSting(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				add_string_view.abcPage = this;
+				add_string_view.visible = true;
+				
+			}
+			
+			
+			public function onAddNamespace(obj:Object):void {
+				var kind:int = obj['kind'];
+				var name:int = obj['name'];
+				var str:String = obj['value'];
+				
+				namespacesList.dataProvider.addItem({
+					dataIndex: namespacesList.dataProvider.length+1,  
+					dataKind:  kind + " " + Utils.quoteString( Constant.toStr(kind)  ) ,
+					dataName:  Utils.getLinkEventText("focus_string", name, __string( name   ) )
+				});
+				
+			}
+			
+			private function onClickAddNamespace(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				add_namespace_view.abcPage = this;
+				add_namespace_view.visible = true;
+				add_namespace_view.show(_abc);
+			}
+			
+			public function onAddMultiname(obj:Object):void {
+				var kind:int = obj['kind'];
+				
+				var data:Object = {
+					dataIndex: multinamesList.dataProvider.length+1,  
+					dataKind:kind + " " + Utils.quoteString( Constant.toStr(kind   )  ) ,
+					dataName: null,
+					dataNameSpace:null,
+					dataNameSpaceSet:null
+				};
+				
+				if ( obj['name'] != null) {
+					data['dataName'] = Utils.getLinkEventText("focus_string", obj['name'] , __string(obj['name']) );
+
+				}
+				
+				if ( obj['namespace'] != null) {
+					data['dataNameSpace'] = Utils.getLinkEventText("focus_namespace", obj['namespace']  ,obj['namespace'] );
+					
+				}
+				
+				if ( obj['ns_set'] != null) {
+					data['dataNameSpaceSet'] = Utils.getLinkEventText("focus_namespaceset", obj['ns_set']  ,obj['ns_set'] );
+					
+				}
+			
+				
+				multinamesList.dataProvider.addItem(data);
+				
+			}
+			
+			private function onClickAddMultiname(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				add_multiname_view.abcPage = this;
+				add_multiname_view.visible = true;
+				add_multiname_view.show(_abc);
 			}
 			
 		]]>

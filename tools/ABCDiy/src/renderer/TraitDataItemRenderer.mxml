@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.swfdiy.data.ABC.TraitClass;
+			import com.swfdiy.data.ABC.TraitFunction;
+			import com.swfdiy.data.ABC.TraitMethod;
+			import com.swfdiy.data.ABC.TraitSlot;
+			protected function forward_click(focusEvent:String, value:Object):void
+			{
+				// TODO Auto-generated method stub
+				var e:MyEvent = new MyEvent(focusEvent,true);
+				e.data = value;
+				owner.dispatchEvent(e);
+			}
+			
+			override  public function set data(value:Object):void
+			{
+				super.data = value;
+				
+				
+				if (data == null) {
+					return;
+				}
+				var parentPage:ABCPage = ABCDiy(this.parentApplication).showingABCPage;
+				
+				if (data.dataKind == "Class") {
+					var tc:TraitClass = TraitClass(data.traitdata);
+					lableTxt.htmlText = "slot_id:" + String(tc.slot_id) + ", class_i:" +  Utils.getLinkEventText("focus_class", tc.classi,  String(tc.classi) );
+					
+					
+				} else if (data.dataKind == "Method" || data.dataKind == "Getter"  || data.dataKind == "Setter" ) {
+					var tm:TraitMethod =  TraitMethod(data.traitdata);
+					lableTxt.htmlText = "disp_id:" + String(tm.disp_id) 
+						+ ", method:" +  Utils.getLinkEventText("focus_method", tm.method, parentPage.__string(parentPage.__method(tm.method).name  ));
+
+				} else if (data.dataKind == "Function") {
+					var tf:TraitFunction =  TraitFunction(data.traitdata);
+					lableTxt.htmlText = "slot_id:" + String(tf.slot_id) 
+						+ ", function:" +  Utils.getLinkEventText("focus_method", tf.mfunction, parentPage.__string(parentPage.__method(tf.mfunction).name  ));
+
+				} else if (data.dataKind == "Const" || data.dataKind == "Slot") {
+					var ts:TraitSlot = TraitSlot(data.traitdata);
+					
+					var type_name:String = parentPage.__multiname_name(ts.type_name);
+					var val:String = "";
+					if (ts.vindex) {
+						val = parentPage.__linkval(ts.vkind, ts.vindex);
+						
+					}
+					
+					
+					lableTxt.htmlText = "slot_id:" + String(ts.slot_id) + ", type_name:" +  Utils.getLinkEventText("focus_multiname", ts.type_name,  type_name )
+						+ ", vindex: " +  val + " " + ( ts.vindex ? ("vkind: " + ts.vkind): ""  )
+						;
+
+				}
+				
+				
+			}
+			private function lbl_link(evt:TextEvent):void {
+				var reg:RegExp = /(\w+)-(\w+)/;
+				var result:* = evt.text.match(reg);
+				if (result && result.length >=2) {
+					var e:MyEvent = new MyEvent(result[1],true);
+					e.data = result[2];
+					owner.dispatchEvent(e);
+				}
+				
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:Label id="lableTxt" paddingLeft="10" width="100%" height="100%" paddingTop="3"
+			  verticalCenter="0" 
+			  link="lbl_link(event);" selectable="true" truncateToFit="true"/>
+	
+</s:GridItemRenderer>

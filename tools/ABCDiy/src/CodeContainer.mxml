@@ -1,27 +1,652 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="552" height="452">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-	
+<s:TitleWindow 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx" width="630" height="320" minHeight="320" minWidth="630"
+			   skinClass="flex.utils.spark.resize.ResizableDraggableTitleWindowSkin"
+			   title="Resizable &amp; Draggable">
+	<s:TextArea id="textCode"
+				height="90%"
+				width="90%"
+			    lineHeight="20"
+				top="30"
+				left="5"
+				lineBreak="toFit"
+				skinClass="flex.utils.spark.TextAreaLineNumbersSkin"/>
+		
+	<s:Button left="4" top="6" label="Apply Changes" click="onApply(event)"/>
+	<s:Label id="errorTxt" x="111" y="7" width="469" color="#F61212"/>
+	<s:Label x="10"  width="570" bottom="5" text="max stack:                          local count:                           init scope dep:                          max scope dep:"/>
+	<s:TextInput id="txtMaxStack" x="75" bottom="5" width="56" height="18" />
+	<s:TextInput id="txtLocalCount" x="213" bottom="5" width="56" height="18"/>
+	<s:TextInput id="txtInitScope" x="375" bottom="5" width="56" height="18" />
+	<s:TextInput id="txtMaxScope" x="542" bottom="5" width="56" height="18" />
 	<fx:Script>
 		<![CDATA[
-			import flashx.textLayout.elements.DivElement;
-			import flashx.textLayout.elements.TextFlow;
+			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.ABC.MethodBody;
+			import com.swfdiy.data.ABC.MethodInfo;
+			import com.swfdiy.data.ABC.OpcodeParam;
+			import com.swfdiy.data.Opcode;
 			
-			import spark.components.Label;
+			import flashx.textLayout.edit.IEditManager;
+			
+			import flex.utils.spark.TextAreaLineNumbersSkin;
+			
+			import mx.events.FlexEvent;
+			private var _abc:ABC;
+			private var _methodBodyIndex:int;
+			private var methodBody:MethodBody;
+			private var method:MethodInfo;
+			private var _indent:String = "    ";
+			private var lineheight:int = 20;
+			private var created:Boolean = false;
+
+			public function init(abc:ABC, methodBodyIndex:int):void {
+				_abc = abc;
+				_methodBodyIndex = methodBodyIndex;
+				methodBody = MethodBody(_abc.method_bodys[_methodBodyIndex]);
+				method = MethodInfo(_abc.methods[methodBody.method]);
+
+				this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreated);
+			}
+			
+			protected function onCreated(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, onCreated);
+				var parentPage:ABCPage = ABCDiy(this.parentApplication).showingABCPage;
+				this.title = "(" + _methodBodyIndex + ") " + parentPage.__string(method.name);
+				
+				this.closeButton.addEventListener(MouseEvent.CLICK, onClose, false, 0, true);
+				//textCode.addEventListener(MouseEvent.CLICK, onClickTextArea);
+				created = true;
+				refresh();
+			}
 			
 			
-			public function addText():void {
+			protected function onClickTextArea(event:MouseEvent):void
+			{
+				/*var pt:Point = textCode.globalToLocal(new Point(event.stageX, event.stageY));
+				var _y:int = int(pt.y);
+
+				trace('y=' + _y);
+				var ln:int = int(_y / lineheight);
+				trace("line=" + ln);
+				
+				//hightlight 
+				var skin:TextAreaLineNumbersSkin=TextAreaLineNumbersSkin(textCode.skin);
+				skin.gutter3.graphics.clear();
+				skin.gutter3.graphics.beginFill(0xe6f2ff);
+				skin.gutter3.graphics.drawRect(0, ln*lineheight+2,skin.gutter3.width-2, lineheight-2);
+				skin.gutter3.graphics.endFill();
+				
+				skin.textDisplay.graphics.clear();
+				skin.textDisplay.graphics.beginFill(0xe6f2ff);
+				skin.textDisplay.graphics.drawRect(0, ln*lineheight,skin.textDisplay.width, lineheight);
+				skin.textDisplay.graphics.endFill();
+				*/
+				//var interactionManager:IEditManager = textCode.textFlow.interactionManager as IEditManager;
+			
+				//var pos:int = interactionManager.anchorPosition;
+				
 				
 			}
 			
+			protected function onClose(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.visible = false;
+			}
+			
+			private function refreshJumpLines():void {
+				var i:int;
+				var params:Array;
+				var op:int ;
+				var j:int;
+				var lineLen:int = 6;
+				trace(textCode);
+				var skin:TextAreaLineNumbersSkin=TextAreaLineNumbersSkin(textCode.skin);
+				skin.gutter2.graphics.clear();
+				
+				
+				var lineStartX:int = skin.gutter2.width-1;
+				//var lineStartColor:int = 0x0000ff;
+				for (i=0;i<methodBody.opcodes.length;i++) {
+					var ele:Object = methodBody.opcodes[i];
+					op = ele[0];
+					params = ele[1];
+					for (j=0;j<params.length;j++) {
+						if (params[j].extra && params[j].extra['jump_to_op_index']) {
+							//draw lines
+							var y1:int = (i+0.5) * lineheight;
+							var y2:int = (params[j].extra['jump_to_op_index']+0.5) * lineheight;
+							
+							var lineStartColor:uint = int(Math.random()* 0xffffff) + 100;
+							skin.gutter2.graphics.lineStyle(1,lineStartColor);
+							skin.gutter2.graphics.moveTo(lineStartX, y1);
+							skin.gutter2.graphics.lineTo(lineStartX - lineLen, y1);
+							skin.gutter2.graphics.lineTo(lineStartX - lineLen, y2);
+							skin.gutter2.graphics.lineTo(lineStartX , y2);
+							
+							lineLen += 7;
+							if (lineLen >= 90) {
+								lineLen = 6;
+							}
+							//lineStartColor += 50;
+						}
+					}
+				}
+				
+			}
+			
+			private function refreshCode():void
+			{
+				// TODO Auto Generated method stub
+				var strs:Array =[];
+				var i:int;
+				for (i=0;i<methodBody.opcodes.length;i++) {
+					var error:Object = {};
+					var str:String = elementToString(methodBody.opcodes[i], error);
+					strs.push(str);
+				}
+				
+				textCode.text = strs.join("\n");
+				
+				txtMaxStack.text = this.methodBody.max_stack.toString();
+				txtInitScope.text = this.methodBody.init_scope_depth.toString();
+				txtMaxScope.text = this.methodBody.max_scope_depth.toString();
+				txtLocalCount.text = this.methodBody.local_count.toString();
+			}
+			
+			private function refreshTips():void
+			{
+				// TODO Auto Generated method stub
+				var strs:Array =[];
+				var i:int;
+				for (i=0;i<methodBody.opcodes.length;i++) {
+					var error:Object = {};
+					var str:String = elementToTips(methodBody.opcodes[i], error);
+					strs.push(str);
+				}
+				var skin:TextAreaLineNumbersSkin=TextAreaLineNumbersSkin(textCode.skin);
+				skin.memoLabel.htmlText = strs.join("<br/>");
+			}
+			private function elementToString(ele:Object, error:Object):String {
+				var snippets:Array = [];
+				var s:String;
+				var params:Array;
+				var op:int ;
+				var i:int;
+								
+				op = ele[0];
+				params = ele[1];
+				if (op > Opcode.opNames.length) {
+					return "unknown opcode:" + op;
+				}
+				
+				//op
+				s = _make_space(Opcode.opNames[op], 12);
+				snippets.push(s);
+				
+				for (i=0;i<params.length;i++) {
+					/*var type:String = params[i].type;
+					if (type == "u32") {
+						tempStream.write_u32(params[j].val);
+					}else if (type == "u8") {
+						tempStream.write_u8(params[j].val);
+					}  else if  (type == "s24") {
+						tempStream.write_s24( params[j].val);
+					}*/
+					if (params[i].extra && params[i].extra['jump_to_op_index'] != -1) {
+						snippets.push(indexToOpStr( params[i].extra['jump_to_op_index'] ));
+					} else {
+						snippets.push(params[i].val);
+					}
+					
+				}
+				
+				
+				return snippets.join(" ");
+			}
+			
+			private function elementToTips(ele:Object, error:Object):String {
+				var snippets:Array = [];
+				var s:String;
+				var params:Array;
+				var op:int ;
+				var i:int;
+				
+				op = ele[0];
+				params = ele[1];
+				if (op > Opcode.opNames.length) {
+					return "unknown opcode:" + op;
+				}
+				var paramsInfo:Object = Opcode.getParamInfo();
+				//op
+				s = Opcode.opNames[op];
+				snippets.push(s);
+				
+				//basic checks
+				var parentPage:ABCPage = ABCDiy(this.parentApplication).showingABCPage;
+				var paramsRule:Array = paramsInfo[op];
+				if (paramsRule) {
+					if (params.length != paramsRule.length) {
+						return  "should have " + paramsRule.length + " params";
+					}
+					
+					var p:int;
+					var param_error:String = "";
+					for (p=0;p<paramsRule.length;p++) {
+						s = "";
+						
+						var v:int = params[p].val;
+						if (paramsRule[p]['target'] == "string" ) {
+							if (v >= _abc.constant_pool.strings.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						} else if  (paramsRule[p]['target'] == "int" ) {
+							if (v >= _abc.constant_pool.ints.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						} else if  (paramsRule[p]['target'] == "uint" ) {
+							if (v >= _abc.constant_pool.uints.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						} else if  (paramsRule[p]['target'] == "double" ) {
+							if (v >= _abc.constant_pool.doubles.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						}  else if  (paramsRule[p]['target'] == "multiname" ) {
+							if (v >= _abc.constant_pool.multinames.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						}  else if  (paramsRule[p]['target'] == "class" ) {
+							if (v >= _abc.classes.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						}  else if  (paramsRule[p]['target'] == "namespace" ) {
+							if (v >= _abc.constant_pool.namespaces.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						}   else if  (paramsRule[p]['target'] == "method" ) {
+							if (v >= _abc.methods.length) {
+								param_error = "param" + p + " is out_of_bound";
+								break;
+							}
+						} else {
+							s = String( v);
+						}
+						
+						if (s == "") {
+							//noerror
+							snippets.push(  parentPage.getLinkText(paramsRule[p]['target'], v)  );
+						} else {
+							snippets.push(s);
+						}
+						
+						
+					}
+					
+					//has error?
+					if (param_error != "") {
+						return param_error;
+					}
+					
+				} else {
+					//TBD: jmp, switch opcode have special checks
+					
+				}
+				
+				
+				return snippets.join(" ");
+			}
+			
+			
+			private function _make_space(str:String, len:int):String
+			{
+				var i:int;
+				var sc:int = len-str.length;
+				for (i=0;i<sc;i++) {
+					str += " "
+				}
+				
+				return str;
+			}
+			private function _error(line:int, str:String):void {
+				errorTxt.text = "Line" + String(line) + ": " + str;
+			}
+			
+			private function _is_int(s:String):Boolean {
+				if (s.match(/^\d+$/)) {
+					return true;
+				}
+				return false;
+			}
+			
+			protected function onApply(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				//parse strings into array
+				errorTxt.text = "";
+				var content:String = textCode.text;
+				content = content.replace(/\r/g,"");
+				var ar:Array = content.split("\n");
+				var i:int;
+				var paramsInfo:Object = Opcode.getParamInfo();
+				//save map of opname->op
+				
+				var opMap:Object = {};
+				for (i=0;i<Opcode.opNames.length;i++) {
+					opMap[Opcode.opNames[i]] = i;
+				}
+				
+				var real_op_count:int = 0;
+				for (i=0;i<ar.length;i++) {
+					var s:String = ar[i];
+					//trim
+					s = s.replace(/^\s+/,"");
+					s = s.replace(/\s+$/,"");
+					if (s.match(/^\s*$/)) {
+						//empty line, ignore it
+						continue;
+					}
+					real_op_count++;
+				}
+				var ops:Array = [];
+				for (i=0;i<ar.length;i++) {
+					var s:String = ar[i];
+					//trim
+					s = s.replace(/^\s+/,"");
+					s = s.replace(/\s+$/,"");
+					if (s.match(/^\s*$/)) {
+						//empty line, ignore it
+						continue;
+					}
+					var ps:Array = s.split(/\s+/);
+					
+					
+					var op_str:String = ps[0];
+					if (opMap[op_str] == null) {
+						//unknown opcode
+						_error((i), "unknown opcode " + op_str);
+						return;
+					}
+					var opcode:int = opMap[op_str] ;
+					//check params
+					
+					//basic checks
+					var paramsRule:Array = paramsInfo[opcode];
+					if (paramsRule) {
+						if (ps.length -1 != paramsRule.length) {
+							_error((i), "should have " + paramsRule.length + " params");
+							return;
+						}
+						
+						var p:int;
+						for (p=0;p<paramsRule.length;p++) {
+							if (!_is_int(ps[p+1])) {
+								_error((i), "param" + String(p) + " should be integer");
+								return;
+							}
+							var v:int = int(ps[p+1]);
+							if (paramsRule[p]['type'] == 'u8') {
+								if (v >= 256) {
+									_error((i), "param" + String(p) + " should be < 256");
+									return;
+								}
+							}
+							
+							if (paramsRule[p]['target'] == "string" ) {
+								if (v >= _abc.constant_pool.strings.length) {
+									_error((i), "param" + String(p) + " has invalid index of constant pool string: " + v);
+									return;
+								}
+							} else if  (paramsRule[p]['target'] == "int" ) {
+								if (v >= _abc.constant_pool.ints.length) {
+									_error((i), "param" + String(p) + " has invalid index of constant pool int: " + v);
+									return;
+								}
+							} else if  (paramsRule[p]['target'] == "uint" ) {
+								if (v >= _abc.constant_pool.uints.length) {
+									_error((i), "param" + String(p) + " has invalid index of constant pool uint: " + v);
+									return;
+								}
+							} else if  (paramsRule[p]['target'] == "double" ) {
+								if (v >= _abc.constant_pool.doubles.length) {
+									_error((i), "param" + String(p) + " has invalid index of constant pool double: " + v);
+									return;
+								}
+							}  else if  (paramsRule[p]['target'] == "multiname" ) {
+								if (v >= _abc.constant_pool.multinames.length) {
+									_error((i), "param" + String(p) + " has invalid index of constant pool multiname: " + v);
+									return;
+								}
+							}  else if  (paramsRule[p]['target'] == "class" ) {
+								if (v >= _abc.classes.length) {
+									_error((i), "param" + String(p) + " has invalid index of class: " + v);
+									return;
+								}
+							}  else if  (paramsRule[p]['target'] == "namespace" ) {
+								if (v >= _abc.constant_pool.namespaces.length) {
+									_error((i), "param" + String(p) + " has invalid index of constant pool namespace: " + v);
+									return;
+								}
+							}   else if  (paramsRule[p]['target'] == "method" ) {
+								if (v >= _abc.methods.length) {
+									_error((i), "param" + String(p) + " has invalid index of method: " + v);
+									return;
+								}
+							} 
+							
+						}
+						
+					} else {
+						//TBD: jmp, switch opcode have special checks
+						switch (opcode) {
+							case Opcode.OP_jump:
+							case Opcode.OP_iftrue:		case Opcode.OP_iffalse:
+							case Opcode.OP_ifeq:		case Opcode.OP_ifne:
+							case Opcode.OP_ifge:		case Opcode.OP_ifnge:
+							case Opcode.OP_ifgt:		case Opcode.OP_ifngt:
+							case Opcode.OP_ifle:		case Opcode.OP_ifnle:
+							case Opcode.OP_iflt:		case Opcode.OP_ifnlt:
+							case Opcode.OP_ifstricteq:	case Opcode.OP_ifstrictne:
+								if (ps.length != 2) {
+									_error((i),  "should have " + "1" + " param");
+									return;
+								}
+								var jump_to_index :int = opStrToIndex(ps[1]);
+								if (int.MAX_VALUE == jump_to_index ) {
+									_error((i), "param0 should be format of [opindex]");
+									return;
+								}
+								if (real_op_count <= jump_to_index) {
+									//out of bound
+									_error((i), "param0 jump out of scope");
+									return;
+								}
+								
+								//ok. good jmp
+								
+							break;	
+							
+							case Opcode.OP_lookupswitch:
+								//default_offset 
+								//case_count 
+								//case_offsets... 
+								if (ps.length <3 ) {
+									_error((i),  "should have more than 1 params");
+									return;
+								}
+								
+								var default_ip_index :int = opStrToIndex(ps[1]);
+								if (int.MAX_VALUE == default_ip_index) {
+									_error((i), "param0 should be format of [opindex]");
+									return;
+								}
+								
+								if (real_op_count <= default_ip_index) {
+									//out of bound
+									_error((i), "param0 jump out of scope");
+									return;
+								}
+								if (!_is_int(ps[2])) {
+									_error((i), "param1 should be integer");
+									return;
+								}
+								var case_count:int = int(ps[2]);
+								var c:int;
+								if ( ps.length <3 + (case_count +1) ) {
+									_error((i), "not enough cases");
+									return;
+								}
+								for (c=0;c<=case_count;c++) {
+									var pc:String = ps[3+c];
+									var op_index :int = opStrToIndex(pc);
+									if (int.MAX_VALUE == op_index) {
+										_error((i), "case" + c + " should be format of [opindex]");
+										return;
+									}
+									
+									if (real_op_count <= op_index) {
+										//out of bound
+										_error((i), "case" + c + "jump out of scope");
+										return;
+									}
+								}
+								//ok..switch ok
+								
+							break;
+							default:
+								//NO PRAMS OPCODE here
+							//_error((i), "unsupported opcode");
+							
+						}
+						
+					}
+					
+					ops.push(makeElement(opcode, ps));
+					
+				}//end of for
+				
+				methodBody.updateOpcode(ops);
+				
+				this.methodBody.max_stack = int(txtMaxStack.text);
+				this.methodBody.init_scope_depth = int(txtInitScope.text);
+				this.methodBody.max_scope_depth = int(txtMaxScope.text );
+				this.methodBody.local_count = int(txtLocalCount.text );
+				
+				refresh();
+				
+				_abc.changed = true;
+			}
+			
+			public function refresh():void {
+				//prepare for showing
+				if(!created) {
+					return;
+				}
+				refreshCode();		
+				refreshJumpLines();
+				refreshTips();
+			}
+			
+			private function makeElement(opcode:int, ps:Object, error:Object=null):Object {
+				var params:Array = [];
+				var ele:Array = [opcode, params];
+				var paramsInfo:Object = Opcode.getParamInfo();
+				var paramsRule:Array = paramsInfo[opcode];
+				var p:int;
+				if (paramsRule){
+					for (p=0;p<paramsRule.length;p++) {
+						if (paramsRule[p]['target'] == "multiname"
+						|| paramsRule[p]['target'] == "int"
+						|| paramsRule[p]['target'] == "unit"
+						|| paramsRule[p]['target'] == "string"
+						|| paramsRule[p]['target'] == "namespace"
+						|| paramsRule[p]['target'] == "double"
+						|| paramsRule[p]['target'] == "method"
+						|| paramsRule[p]['target'] == "class"
+						
+						) {
+							params.push(new OpcodeParam(paramsRule[p]['type'], ps[p+1], paramsRule[p]['target']));
+						} else {
+							params.push(new OpcodeParam(paramsRule[p]['type'], ps[p+1]));
+						}
+						
+					}
+				} else {
+					//TBD: jmp/switch
+					switch (opcode) {
+						case Opcode.OP_jump:
+						case Opcode.OP_iftrue:		case Opcode.OP_iffalse:
+						case Opcode.OP_ifeq:		case Opcode.OP_ifne:
+						case Opcode.OP_ifge:		case Opcode.OP_ifnge:
+						case Opcode.OP_ifgt:		case Opcode.OP_ifngt:
+						case Opcode.OP_ifle:		case Opcode.OP_ifnle:
+						case Opcode.OP_iflt:		case Opcode.OP_ifnlt:
+						case Opcode.OP_ifstricteq:	case Opcode.OP_ifstrictne:
+							
+							var jump_to_index :int = opStrToIndex(ps[1]);
+							
+							
+							var offset:int = -1;
+							params.push(new OpcodeParam("s24", offset, "", {jump_to_op_index: jump_to_index, jump_to: -1, offset_from_op_start: false}));
+
+							break;	
+						
+						case Opcode.OP_lookupswitch:
+							//default_offset 
+							//case_count 
+							//case_offsets... 
+							var offset:int = -1;
+							var default_ip_index :int = opStrToIndex(ps[1]);
+							var case_count:int = int(ps[2]);
+							params.push(new OpcodeParam("s24", offset, "", {jump_to_op_index: default_ip_index, jump_to:-1, offset_from_op_start: true}));
+							params.push(new OpcodeParam("u32", case_count));
+							
+							var c:int;
+							for ( c=0; c <= case_count; c++) {
+								var pc:String = ps[3+c];
+								var op_index :int = opStrToIndex(pc);
+								params.push(new OpcodeParam("s24", offset, "", {jump_to_op_index: op_index, jump_to:-1, offset_from_op_start: true}));
+							}
+							
+							break;
+						default:
+							//opcode withoud params here
+							break;
+					}
+				}
+					
+				
+				return ele;
+			}
+			
+			
+			private function opStrToIndex(str:String):int {
+				var psresult:Array = String(str).match(/^\[(\d+)\]$/);
+				if (psresult == null || psresult.length == 0) {
+					
+					return int.MAX_VALUE;
+				}
+				return int(psresult[1]);
+			}
+			
+			private function indexToOpStr(op:int):String {
+				return '[' + String(op) + ']';
+			}
+			
+			
 		]]>
 	</fx:Script>
-	<s:VGroup id="group" x="113" y="59" width="287" height="312">
-	</s:VGroup>
-	
-	
-</s:Group>
+</s:TitleWindow>
+

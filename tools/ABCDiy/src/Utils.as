@@ -73,5 +73,32 @@ package
 			filelistIndex++;
 			loadNextFile();
 		}
+		
+		public static function getLinkEventText(event:String, value:Object, text:String, simple:Boolean=false):String {
+			if (!simple) {
+				return '<a href="event:' + event + '-' + String(value) + '"><font color="#0000ff">' + String(value) +'</font></a> ' 
+					+ quoteString(text);
+			} else {
+				return getSimpleLinkEventText(event, value, text);
+				//return '<a href="event:' + event + '-' + String(value) + '"><font color="#0000ff">' + quoteString(text) +'</font></a> ' ;
+			}
+			
+		}
+		
+		public static function getSimpleLinkEventText(event:String, value:Object, text:String):String {
+			if (text == "") {
+				text = '""';
+			}
+			return '<a href="event:' + event + '-' + String(value) + '"><font color="#0000ff">' + text +'</font></a> ' ;
+			
+			
+		}
+		
+		public static function quoteString(str:String ):String {
+			if (str == "") {
+				return str;
+			}
+			return '(' + str + ')';
+		}
 	}
 }

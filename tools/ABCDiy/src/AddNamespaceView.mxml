@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx" width="412" height="156" minHeight="320" minWidth="630"
+	skinClass="flex.utils.spark.resize.ResizableDraggableTitleWindowSkin"
+	title="Add namespace" creationComplete="init()">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.ABC.Constant;
+			
+			import mx.collections.ArrayCollection;
+			public var abcPage:ABCPage;
+			public function init() {
+				this.closeButton.addEventListener(MouseEvent.CLICK, onClose, false, 0, true);
+			}
+			protected function onOK(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub\
+				//if (txtValue.text == "") {
+				//	return;
+				//}
+				//abcPage.onAddString({value: txtValue.text});
+				if (kindList.selectedIndex >=0 && nameList.selectedIndex >=0) {
+					
+					abcPage.onAddNamespace({kind: kindList.selectedItem.value, name: nameList.selectedItem.value   });
+					onClose(null);
+				}
+				
+			}
+			public function show(_abc:ABC):void {
+				//init 
+				var src:Array;
+				var l:Array = [];
+				var i:int;
+				src = _abc.constant_pool.strings;
+				for (i=1;i<src.length;i++) {
+					l.push({value: i, label: src[i]});
+				}
+				
+				nameList.dataProvider = new ArrayCollection(l);
+				
+				var ks:Array =[
+					{
+						label: Constant.toStr(Constant.CONSTANT_Namespace),
+						value: Constant.CONSTANT_Namespace
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_PackageNamespace),
+						value: Constant.CONSTANT_PackageNamespace
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_PackageInternalNs),
+						value: Constant.CONSTANT_PackageInternalNs
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_ProtectedNamespace),
+						value: Constant.CONSTANT_ProtectedNamespace
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_ExplicitNamespace),
+						value: Constant.CONSTANT_ExplicitNamespace
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_StaticProtectedNs),
+						value: Constant.CONSTANT_StaticProtectedNs
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_PrivateNs),
+						value: Constant.CONSTANT_PrivateNs
+					}
+				
+				];
+				
+				kindList.dataProvider = new ArrayCollection(ks);
+				
+			}
+			protected function onClose(event:MouseEvent):void
+			{
+				
+				this.visible = false;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button x="308" y="50" width="86" height="31" label="OK" click="onOK(event)"/>
+	<s:Label x="8" y="27" width="39" height="18" text="kind"/>
+	<s:DropDownList id="kindList" x="56" y="21" width="182"></s:DropDownList>
+	<s:Label x="9" y="66" width="39" height="18" text="name"/>
+	<s:DropDownList id="nameList" x="57" y="60" width="181"></s:DropDownList>
+</s:TitleWindow>

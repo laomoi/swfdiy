@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx" width="440" height="270" minHeight="320" minWidth="630"
+	skinClass="flex.utils.spark.resize.ResizableDraggableTitleWindowSkin"
+	title="Add namespace" creationComplete="init()">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.swfdiy.data.ABC;
+			import com.swfdiy.data.ABC.Constant;
+			
+			import mx.collections.ArrayCollection;
+			public var abcPage:ABCPage;
+			public function init() {
+				this.closeButton.addEventListener(MouseEvent.CLICK, onClose, false, 0, true);
+			}
+			protected function onOK(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub\
+				//if (txtValue.text == "") {
+				//	return;
+				//}
+				//abcPage.onAddString({value: txtValue.text});
+				var data:Object = {};
+				if (kindList.selectedIndex >=0) { 
+					if (kindList.selectedItem.value ==  Constant.CONSTANT_QName) {
+						
+						if (nameList.selectedIndex == -1 || namespaceList.selectedIndex == -1 ) {
+							return;
+						}
+						
+						data['name'] = nameList.selectedItem.value;
+						data['namespace'] = namespaceList.selectedItem.value;
+					} else if (kindList.selectedItem.value ==  Constant.CONSTANT_RTQName) {
+						if (nameList.selectedIndex == -1  ) {
+							return;
+						}
+						data['name'] = nameList.selectedItem.value;
+					} else if (kindList.selectedItem.value ==  Constant.CONSTANT_Multiname) {
+						if (nameList.selectedIndex == -1 || nssetList.selectedIndex == -1 ) {
+							return;
+						}
+						data['name'] = nameList.selectedItem.value;
+						data['ns_set'] = nssetList.selectedItem.value;
+					}
+				
+					data['kind'] = kindList.selectedItem.value;
+					abcPage.onAddMultiname(data);
+					onClose(null);
+				}
+				
+			}
+			public function show(_abc:ABC):void {
+				//init 
+				var src:Array;
+				var l:Array = [];
+				var i:int;
+				src = _abc.constant_pool.strings;
+				for (i=1;i<src.length;i++) {
+					l.push({value: i, label: src[i]});
+				}
+				
+				nameList.dataProvider = new ArrayCollection(l);
+				//QName  RTQName Multiname 
+				var ks:Array =[
+					{
+						label: Constant.toStr(Constant.CONSTANT_QName),
+						value: Constant.CONSTANT_QName
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_RTQName),
+						value: Constant.CONSTANT_RTQName
+					},
+					{
+						label: Constant.toStr(Constant.CONSTANT_Multiname),
+						value: Constant.CONSTANT_Multiname
+					}
+				
+				];
+				
+				kindList.dataProvider = new ArrayCollection(ks);
+				
+				
+				//ns_set
+				l = [];
+				src = _abc.constant_pool.ns_sets;
+				for (i=1;i<src.length;i++) {
+					l.push({value: i, label: src[i].ns.join(",")});
+				}
+				
+				nssetList.dataProvider = new ArrayCollection(l);
+				
+				//ns
+				l = [];
+				src = _abc.constant_pool.namespaces;
+				for (i=1;i<src.length;i++) {
+					l.push({value: i, label: i});
+				}
+				
+				namespaceList.dataProvider = new ArrayCollection(l);
+				
+			}
+			protected function onClose(event:MouseEvent):void
+			{
+				
+				this.visible = false;
+			}
+			
+			private function onChange():void {
+				if (kindList.selectedItem.value ==  Constant.CONSTANT_QName) {
+					nssetList.enabled = false;
+					nameList.enabled = true;
+					namespaceList.enabled = true;
+				} else if (kindList.selectedItem.value ==  Constant.CONSTANT_RTQName) {
+					nssetList.enabled = false;
+					nameList.enabled = true;
+					namespaceList.enabled = false;
+				} else if (kindList.selectedItem.value ==  Constant.CONSTANT_Multiname) {
+					nssetList.enabled = true;
+					nameList.enabled = true;
+					namespaceList.enabled = false;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button x="321" y="177" width="86" height="31" label="OK" click="onOK(event)"/>
+	<s:Label x="8" y="27" width="39" height="18" text="kind"/>
+	<s:DropDownList id="kindList" x="81" y="21" width="182" change="onChange()"></s:DropDownList>
+	<s:Label x="9" y="66" width="39" height="18" text="ns_set"/>
+	<s:DropDownList id="nssetList" x="82" y="60" width="181"></s:DropDownList>
+	<s:Label x="10" y="103" width="74" height="18" text="namespace"/>
+	<s:DropDownList id="namespaceList" x="83" y="97" width="181"></s:DropDownList>
+	<s:Label x="9" y="147" width="39" height="18" text="name"/>
+	<s:DropDownList id="nameList" x="82" y="141" width="181"></s:DropDownList>
+</s:TitleWindow>

@@ -1,23 +1,32 @@
 package
 {
 	import com.swfdiy.data.ABC;
+	import com.swfdiy.data.SWFTag.TagDoABC;
 
 	public class ABCWrapper
 	{
+		private var _tag:TagDoABC;
 		private var _abc:ABC;
 		private var _scripts:Array;
 		
 		
-		
-		public function ABCWrapper(abc:ABC)
+		private var _name:String;
+		public function ABCWrapper(abcTag:TagDoABC)
 		{
-			_abc = abc;
-			
+			_tag = abcTag;
+			_abc = abcTag.abc();
+			_name =abcTag.Name;	
 			_init();
 			
 		}
 		public function getABC():ABC {
 			return _abc;
+		}
+		public function getName():String {
+			return _name;
+		}
+		public function getTag():TagDoABC {
+			return _tag;
 		}
 		private function _init():void {
 			_scripts = [];

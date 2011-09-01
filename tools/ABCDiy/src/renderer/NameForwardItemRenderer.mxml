@@ -5,13 +5,6 @@
 	
 	<fx:Script>
 		<![CDATA[
-			protected function forward_click(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
-				var e:MyEvent = new MyEvent("focus_string",true);
-				e.data = data.dataNameIndex;
-				owner.dispatchEvent(e);
-			}
 			
 			override  public function set data(value:Object):void
 			{
@@ -19,16 +12,36 @@
 				if (data == null) {
 					return;
 				}
-				if (data.dataNameIndex != "") {
+				/*var valueField:String = CustomGridColumn(this.column).valueField;
+				if (data[valueField] != "") {
 					forward_button.visible = true;
 				} else {
 					forward_button.visible = false;
+				}
+				<s:Label id="labelDisplay" paddingLeft="10" width="83%" height="15"  
+				verticalAlign="middle" verticalCenter="0" maxDisplayedLines="1" 
+				color="0x0000ff" lineBreak="explicit" click="forward_click(event)"/>
+				<s:Button id="forward_button" click="forward_click(event)" right="2" verticalCenter="0" width="14" height="12" fontSize="9" icon="assets/link.jpg"/>
+
+				*/
+				lableTxt.htmlText = data[this.column.dataField];
+				lableTxt.width = this.column.width;
+			}
+			
+			private function lbl_link(evt:TextEvent):void {
+				var reg:RegExp = /(\w+)-(\w+)/;
+				var result:* = evt.text.match(reg);
+				if (result && result.length >=2) {
+					var e:MyEvent = new MyEvent(result[1],true);
+					e.data = result[2];
+					owner.dispatchEvent(e);
 				}
 			}
 		]]>
 	</fx:Script>
 	
-	<s:Label id="labelDisplay" paddingLeft="10" width="83%" height="15" verticalCenter="0" maxDisplayedLines="1" lineBreak="explicit"/>
-	<s:Button id="forward_button" click="forward_click(event)" right="2" verticalCenter="0" width="14" height="12" fontSize="9" icon="assets/link.jpg"/>
+	<mx:Label id="lableTxt" paddingLeft="10" width="100%" height="100%" paddingTop="3"
+			verticalCenter="0" 
+			  link="lbl_link(event);" selectable="true" truncateToFit="true"/>
 	
 </s:GridItemRenderer>
