@@ -3,7 +3,7 @@
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:local="*"
-					   width="1024" height="768" creationComplete="onInit(event)">
+					   width="1024" height="768" creationComplete="onInit(event)" title="ABCDiy beta1 - made by ldx@swfdiy.com www.swfdiy.com">
 	
 	<fx:Script>
 		<![CDATA[
@@ -515,5 +515,4 @@
 	</s:Group>
 	<s:Button x="665" y="718" label="testPNG" click="onTestPNG(event)" height="40" width="85" visible="false"/>
 	<s:Button x="773" y="718" label="packPNG" click="onTestPNG2(event)" height="40" width="85"  visible="false"/>
-	<s:Label x="6" y="750" text="made by ldx@swfdiy.com www.swfdiy.com"/>
 </s:WindowedApplication>
