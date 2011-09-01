@@ -262,7 +262,7 @@
 	</s:DataGrid>
 	<s:Button x="944" y="497" height="43" label="close" click="onClose(event)"/>
 	<s:Button x="83" y="130" width="16" height="16" chromeColor="#CCCCCC" click="onClickAddMultiname(event)"
-			  cornerRadius="0" icon="@Embed('assets/jia.png')"/>
+			  cornerRadius="0" icon="@Embed('assets/jia.jpg')"/>
 	<s:Button x="414" y="2" width="16" height="16" chromeColor="#CCCCCC" click="onClickAddSting(event)"
 			  cornerRadius="0" icon="@Embed('assets/jia.jpg')"/>
 	<s:Button x="727" y="2" width="16" height="16" chromeColor="#CCCCCC" click="onClickAddNamespace(event)"
