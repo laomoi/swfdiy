@@ -275,7 +275,7 @@ package com.swfdiy.data.ABC
 						break;
 					case Opcode.OP_newclass: 
 						//s += abc.instances[readU32()]
-						params.push(new OpcodeParam("u32", stream.read_u32(), "instance"));
+						params.push(new OpcodeParam("u32", stream.read_u32(), "class"));
 						s +=  Global.INSTANCE((params[0].val)).nameStr();
 						break;
 					case Opcode.OP_lookupswitch:
@@ -574,22 +574,52 @@ package com.swfdiy.data.ABC
 				
 			return d;
 		}
+		
+		public function updateOpcode(ops:Array):void {
+			//TBD: Exceptions
+			//need to calculate offset
+			var i:int;
+			var j:int;
+			
+			var tempb:ByteArray = new ByteArray;
+			var tempStream:ABCStream = new ABCStream(tempb);
+			var op_len:Array = [];
+			for (i=0;i<ops.length;i++) {
+				var p:int = tempStream.pos;
+				op = ops[i][0];
+				params = ops[i][1];
+				tempStream.write_u8(op);
+				for (j=0;j<params.length;j++) {
+					var type:String = params[j].type;
+					if (type == "u32") {
+						tempStream.write_u32(params[j].val);
+					}else if (type == "u8") {
+						tempStream.write_u8(params[j].val);
+					}  else if  (type == "s24") {
+						tempStream.write_s24( params[j].val);
+					}
+				}
+				op_len[i] = tempStream.pos - p;
+			}
+			var offset:int;
+			for (i=0;i<ops.length;i++) {
+				var op:int = ops[i][0];
+				var params:Array = ops[i][1];
+				for (j=0;j<params.length;j++) {
+					if (params[j].extra && params[j].extra['jump_to_op_index'] != -1) {
+						
+						offset = calculate_offset(op_len, i, params[j].extra['jump_to_op_index'], params[j].extra['offset_from_op_start']);
+						params[j].val = offset;
+						trace("update offset..");
+					}
+				}
+			}
+			
+			opcodes = ops;
+		}
 	}
 }
 	
-	
-class OpcodeParam{
-	public var type:String;
-	public var indexType:String;
-	public var val:*;
-	public var extra:Object;
-	public function OpcodeParam(_type:String, _val:*, _indexType:String="", _extra:Object=null) {
-		type = _type;
-		val = _val;
-		indexType = _indexType;
-		extra = _extra;
-	}
-}
 
 dynamic class LabelManager
 {

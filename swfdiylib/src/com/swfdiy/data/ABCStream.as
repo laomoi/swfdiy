@@ -54,7 +54,12 @@ package com.swfdiy.data
 		}
 		
 		public function write_string(s:String):void {
-			this.write_u32(s.length);
+			var p:int = _data.position;
+			_data.writeUTFBytes(s);
+			var real_len:int = _data.position - p;
+			
+			_data.position = p;
+			this.write_u32(real_len);
 			_data.writeUTFBytes(s);
 		}
 		

@@ -104,9 +104,13 @@ package com.swfdiy.data
 		public function read_bits(nbits:int) :int {
 			return _stream.read_bits(nbits);
 		}
-		
-		public function read_tag( ): SWFTag {
+		public static function read_tag_from_bytes(ba:ByteArray):SWFTag {
+			var stream:SWFStream = new SWFStream(ba);
 			
+			return SWF.read_tag_from_stream(stream);
+		}
+		
+		public static function read_tag_from_stream(_stream:SWFStream):SWFTag {
 			if (_stream.pos >= _stream.length) {
 				return null;
 			}			
@@ -130,9 +134,12 @@ package com.swfdiy.data
 				tag = new TagSymbolClass();
 				tag.data = destStream;
 			} 
-			/* haven't finish function */
+				/* haven't finish function */
 			else if (type == TagDoABC.ID) {
 				tag = new TagDoABC();
+				tag.data = destStream;
+			}else if (type == TagEnd.ID) {
+				tag = new TagEnd();
 				tag.data = destStream;
 			}
 			else {
@@ -140,8 +147,10 @@ package com.swfdiy.data
 				tag.id = type;
 				tag.data = destStream;
 			}
-			
 			return tag;
+		}
+		public function read_tag( ): SWFTag {
+			return SWF.read_tag_from_stream(_stream);
 		}
 		
 		public function make_swf_bytes_from_tags(tags:Array, compressed:Boolean=false):ByteArray{
