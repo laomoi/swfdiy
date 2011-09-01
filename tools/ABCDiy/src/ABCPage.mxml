@@ -169,7 +169,7 @@
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="classesList" x="213" y="301" width="193" height="79" editable="true"
+	<s:DataGrid id="classesList" x="213" y="301" width="193" height="105" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
@@ -188,7 +188,7 @@
 		</s:columns>
 	
 	</s:DataGrid>
-	<s:DataGrid id="instancesList" x="412" y="300" width="606" height="79" editable="true"
+	<s:DataGrid id="instancesList" x="412" y="300" width="606" height="106" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
@@ -210,12 +210,18 @@
 							sortable="false"></local:CustomGridColumn>
 				<local:CustomGridColumn dataField="dataMethod" editable="false" headerText="init"
 										sortable="false" itemRenderer="renderer.NameForwardItemRenderer"></local:CustomGridColumn>
+				<local:CustomGridColumn dataField="dataTraitsCount" editable="false" headerText="traits"
+										forwardEvent="list_traits"	valueField="dataTraits" 
+										resizable="true" sortable="false" itemRenderer="renderer.ListForwardItemRenderer">
+					
+					
+				</local:CustomGridColumn>
 			</s:ArrayList>
 		</s:columns>
 	
 	</s:DataGrid>
 	<s:Label x="416" y="280" text="instance"/>
-	<s:DataGrid id="scriptsList" x="7" y="302" width="202" height="79" editable="true"
+	<s:DataGrid id="scriptsList" x="7" y="302" width="202" height="103" editable="true"
 				requestedRowCount="4">
 		<s:columns>
 			<s:ArrayList>
@@ -291,15 +297,13 @@
 			
 			import spark.events.GridEvent;
 			private var _abcWrapper :ABCWrapper; 
-			private var _abcIndex:int;
 			private var _abc:ABC;
 			
 			private var codeContainers:Object = {};
 			
 			
-			public function init(abcWrapper:ABCWrapper, index:int):void {
+			public function init(abcWrapper:ABCWrapper):void {
 				_abcWrapper = abcWrapper;
-				_abcIndex = index;
 				_abc = _abcWrapper.getABC();
 				this.addEventListener(FlexEvent.CREATION_COMPLETE, onCreated);
 				
@@ -365,8 +369,8 @@
 					l.push({
 						dataIndex: i, 
 						dataKind:  ns.kind + " " + Utils.quoteString( Constant.toStr(ns.kind   )  ) ,
-						dataName:  Utils.getLinkEventText("focus_string", ns.name, __string( ns.name   ) )
-					
+						dataName:  Utils.getLinkEventText("focus_string", ns.name, __string( ns.name   ) ),
+						dataValue: ns
 					});
 				}
 				
@@ -380,7 +384,8 @@
 					var ns_set:NamespaceSet = NamespaceSet(src[i]);
 					var obj:Object = {
 						dataIndex: i, 
-						dataName: null
+						dataName: null,
+						dataValue:ns_set
 					};
 					if (ns_set.ns && ns_set.ns.length>0) {
 						obj['dataName'] = Utils.getLinkEventText("focus_namespace", ns_set.ns[0], ns_set.ns.join(","), true );
@@ -401,7 +406,8 @@
 						dataKind:mul.kind + " " + Utils.quoteString( Constant.toStr(mul.kind   )  ) ,
 						dataName: null,
 						dataNameSpace:null,
-						dataNameSpaceSet:null
+						dataNameSpaceSet:null,
+						dataValue: mul
 					};
 					
 					if ( mul.data is MQName) {
@@ -451,7 +457,7 @@
 					
 					for (j=0;j<method.param_count;j++) {
 						param = "";
-						if (method.param_names.length) {
+						if (method.param_names && method.param_names.length) {
 							param += Utils.getSimpleLinkEventText("focus_string", method.param_names[j],  __string(method.param_names[j])  );		
 								
 						}
@@ -634,6 +640,31 @@
 					_abc.constant_pool.strings[i+1] = l[i]['dataValue'];
 				}
 				_abc.constant_pool.string_count = _abc.constant_pool.strings.length;
+				
+				
+				l = ArrayCollection(namespacesList.dataProvider);
+				_abc.constant_pool.namespaces = [_abc.constant_pool.namespaces [0]];
+				for (i=0;i<l.length;i++) {
+					_abc.constant_pool.namespaces[i+1] = l[i]['dataValue'];	
+				}
+				_abc.constant_pool.namespace_count = _abc.constant_pool.namespaces.length;
+				
+				
+				l = ArrayCollection(this.namespacesetList.dataProvider);
+				_abc.constant_pool.ns_sets = [_abc.constant_pool.ns_sets[0]];
+				for (i=0;i<l.length;i++) {
+					_abc.constant_pool.ns_sets[i+1] = l[i]['dataValue'];		
+				}
+				_abc.constant_pool.ns_set_count = _abc.constant_pool.ns_sets.length;
+				
+				
+				l = ArrayCollection(multinamesList.dataProvider);
+				_abc.constant_pool.multinames = [_abc.constant_pool.multinames[0]];
+				for (i=0;i<l.length;i++) {
+					_abc.constant_pool.multinames[i+1] = l[i]['dataValue'];	
+				}
+				_abc.constant_pool.multiname_count = _abc.constant_pool.multinames.length;
+				
 				
 				_abc.changed = true;
 			}
@@ -1023,7 +1054,8 @@
 				namespacesList.dataProvider.addItem({
 					dataIndex: namespacesList.dataProvider.length+1,  
 					dataKind:  kind + " " + Utils.quoteString( Constant.toStr(kind)  ) ,
-					dataName:  Utils.getLinkEventText("focus_string", name, __string( name   ) )
+					dataName:  Utils.getLinkEventText("focus_string", name, __string( name   ) ),
+					dataValue: new MNamespace( kind, name) 
 				});
 				
 			}
@@ -1044,7 +1076,8 @@
 					dataKind:kind + " " + Utils.quoteString( Constant.toStr(kind   )  ) ,
 					dataName: null,
 					dataNameSpace:null,
-					dataNameSpaceSet:null
+					dataNameSpaceSet:null,
+					dataValue: obj['dataValue']
 				};
 				
 				if ( obj['name'] != null) {

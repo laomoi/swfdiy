@@ -9,7 +9,7 @@ package
 		private var _abc:ABC;
 		private var _scripts:Array;
 		
-		
+		public var index:int;
 		private var _name:String;
 		public function ABCWrapper(abcTag:TagDoABC)
 		{

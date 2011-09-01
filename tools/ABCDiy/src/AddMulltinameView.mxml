@@ -10,6 +10,10 @@
 		<![CDATA[
 			import com.swfdiy.data.ABC;
 			import com.swfdiy.data.ABC.Constant;
+			import com.swfdiy.data.ABC.MMultiname;
+			import com.swfdiy.data.ABC.MQName;
+			import com.swfdiy.data.ABC.Multiname;
+			import com.swfdiy.data.ABC.RTQName;
 			
 			import mx.collections.ArrayCollection;
 			public var abcPage:ABCPage;
@@ -24,6 +28,7 @@
 				//}
 				//abcPage.onAddString({value: txtValue.text});
 				var data:Object = {};
+				var dataValue:Multiname;
 				if (kindList.selectedIndex >=0) { 
 					if (kindList.selectedItem.value ==  Constant.CONSTANT_QName) {
 						
@@ -33,19 +38,24 @@
 						
 						data['name'] = nameList.selectedItem.value;
 						data['namespace'] = namespaceList.selectedItem.value;
+						dataValue = new Multiname(Constant.CONSTANT_QName, new MQName(data['namespace'],data['name']) );
 					} else if (kindList.selectedItem.value ==  Constant.CONSTANT_RTQName) {
 						if (nameList.selectedIndex == -1  ) {
 							return;
 						}
 						data['name'] = nameList.selectedItem.value;
+						dataValue = new Multiname(Constant.CONSTANT_RTQName, new RTQName(data['name']) );
+
 					} else if (kindList.selectedItem.value ==  Constant.CONSTANT_Multiname) {
 						if (nameList.selectedIndex == -1 || nssetList.selectedIndex == -1 ) {
 							return;
 						}
 						data['name'] = nameList.selectedItem.value;
 						data['ns_set'] = nssetList.selectedItem.value;
+						dataValue = new Multiname(Constant.CONSTANT_Multiname, new MMultiname(data['ns_set'], data['name']) );
+
 					}
-				
+					data['dataValue'] = dataValue;
 					data['kind'] = kindList.selectedItem.value;
 					abcPage.onAddMultiname(data);
 					onClose(null);
